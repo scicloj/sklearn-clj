@@ -11,16 +11,21 @@ As all estimators in sklearn uses the same interface, it should work for all est
 
 ## Usage
 
+Setup libpython-clj including sklearn.
+If you need to call py/initialize! as part of your libpython-clj setup, this needs to happen before require
+the other names spaces 
+
 ```clojure
 
- Setup libpython-clj including sklearn.
-
+ 
   (require
    '[libpython-clj.python :refer [py.-]]
    '[tech.v3.dataset :as ds]
-   '[tech.v3.dataset.modelling :as ds-mod])
+   '[tech.v3.dataset.modelling :as ds-mod]
+   '[scicloj.sklearn-clj :refer :all]
+   )
 
-;; example train and test dataset
+;; example train and test dataset 
 
   (def train-ds
     (-> (ds/->dataset {:x1 [1 1 2 2]
@@ -69,7 +74,8 @@ As all estimators in sklearn uses the same interface, it should work for all est
 
 ```
 
-The library provides as well an adaption to the scicloj [metamorph](https://github.com/scicloj/metamorph)  library, in order to use the estimators inside a metamorph pipeline.
+The library provides as well an adaptor to the scicloj [metamorph](https://github.com/scicloj/metamorph)  library, in order to use the estimators inside a metamorph pipeline.
+
 
 ```clojure
 (:require [scicloj.sklearn-clj.metamorph :as sklearn-mm])

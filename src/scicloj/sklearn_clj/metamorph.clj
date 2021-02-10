@@ -1,13 +1,3 @@
-(comment
-
-  ;;;  need to be done as very first thing in repl, before loading any ns
-  (require '[libpython-clj.python :as py])
-  (py/initialize! :python-executable "/home/carsten/.conda/envs/scicloj-data-science-handbook/bin/python"
-                  :library-path "/home/carsten/.conda/envs/scicloj-data-science-handbook/lib/libpython3.8.so")
-
-  )
-
-
 (ns scicloj.sklearn-clj.metamorph
   (:require [tech.v3.dataset.modelling :as ds-mod]
             [scicloj.sklearn-clj :as sklearn]
