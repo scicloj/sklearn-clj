@@ -27,7 +27,7 @@
   The function will return the estimator as a python object.
   "
   [ds module-kw estimator-class-kw kw-args]
-  (let
+   (let
       [inference-targets (cf/target ds)
        feature-ds (cf/feature ds)
        snakified-kw-args (snakify-keys kw-args)
@@ -90,11 +90,9 @@
    '[tech.v3.dataset.modelling :as ds-mod])
 
   (def train-ds
-    (->
-     (ds/->dataset {:x1 [1 1 2 2]
+    (-> (ds/->dataset {:x1 [1 1 2 2]
                   :x2 [1 2 2 3]
                   :y  [6 8 9 11]})
-
      (ds-mod/set-inference-target :y)))
 
   (def test-ds
@@ -105,7 +103,7 @@
      (ds-mod/set-inference-target :y)))
 
   (def lin-reg
-    (fit train-ds :linear_model :linear-regression {}))
+    (fit train-ds :linear-model :linear-regression {}))
 
   (predict test-ds lin-reg {})
   ;; => _unnamed [1 3]:
