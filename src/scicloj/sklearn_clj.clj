@@ -1,4 +1,4 @@
-(ns sciloj.sklearn-clj
+(ns scicloj.sklearn-clj
   (:require [camel-snake-kebab.core :as csk]
             libpython-clj.metadata
             [libpython-clj.python :refer [->jvm ->numpy call-kw py.]]

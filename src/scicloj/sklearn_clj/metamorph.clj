@@ -8,7 +8,7 @@
   )
 
 
-(ns sciloj.sklearn.stadapip
+(ns scicloj.sklearn_clj.metamorph
   (:require [tech.v3.dataset.modelling :as ds-mod]
             [tablecloth.api :as tc]
 
