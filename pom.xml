@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>sciloj</groupId>
   <artifactId>sklearn-clj</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
   <name>sklearn-clj</name>
   <description>Use sklearn estimators from Clojure</description>
   <url>https://github.com/sciloj/sklearn-clj</url>

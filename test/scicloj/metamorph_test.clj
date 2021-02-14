@@ -10,10 +10,10 @@
 (defn pipeline [ctx]
     (-> ctx
         ((fn [ctx]
-           (assoc ctx :metamorph/dataset
-                  (ds-mod/set-inference-target (:metamorph/dataset ctx) :y))
+           (assoc ctx :metamorph/data
+                  (ds-mod/set-inference-target (:metamorph/data ctx) :y))
            ))
-        (sklearn-mm/estimate :linear-model :linear-regression {})))
+        ((sklearn-mm/estimate :linear-model :linear-regression {}))))
 
 (deftest test-estimate
   (let [fitted
@@ -21,7 +21,7 @@
 
          {:metamorph/id "1"
           :metamorph/mode :fit
-          :metamorph/dataset
+          :metamorph/data
           (ds/->dataset {:x1 [1 1 2 2]
                        :x2  [1 2 2 3]
                        :y [6 8 9 11 ]})})
@@ -31,14 +31,14 @@
         (pipeline
          (merge fitted
                 {:metamorph/mode :transform
-                 :metamorph/dataset
+                 :metamorph/data
                  (ds/->dataset {:x1 [3]
                               :x2  [5 ]
                               :y [0]})}))]
 
     (is (= 16
            (Math/round
-            (first (seq (get-in prediction [:metamorph/dataset :y] ))))))
+            (first (seq (get-in prediction [:metamorph/data :y] ))))))
     )
 
   )
