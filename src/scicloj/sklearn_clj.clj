@@ -25,14 +25,21 @@
         module (csk/->snake_case_string module-kw)
         class-name (if (keyword? estimator-class)
                      (csk/->PascalCaseString estimator-class)
-                     estimator-class
-                     )
+                     estimator-class)
         estimator-class-name (str "sklearn." module "." class-name)
         constructor (libpython-clj.metadata/path->py-obj estimator-class-name )]
     (call-kw constructor [] snakified-kw-args))
 
 
   )
+(defn raw-tf-result->ds [raw-result]
+  (let [raw-type (python-type raw-result)
+        result (case raw-type
+                 :csr-matrix (py. raw-result toarray)
+                 :ndarray raw-result)
+        new-ds
+        (->  result ->jvm dst/tensor->dataset)]
+    new-ds))
 
 (defn fit
   "Call the fit method of a sklearn transformer, which is specified via
@@ -42,7 +49,7 @@
   The function will return the estimator as a python object.
   "
   [ds module-kw estimator-class-kw kw-args]
-   (let
+  (let
       [inference-targets (cf/target ds)
        feature-ds (cf/feature ds)
        estimator (make-estimator module-kw estimator-class-kw kw-args)
@@ -52,23 +59,7 @@
         (let [y (-> inference-targets (dst/dataset->tensor) ->numpy) ]
           (py. estimator fit X y)))))
 
-(defn transform-result->ds [raw-result]
-  (let [raw-type (python-type raw-result)
-        result (case raw-type
-                 :csr-matrix (py. raw-result toarray)
-                 :ndarray raw-result)
 
-        new-ds
-        (->
-         result
-         ->jvm
-         dst/tensor->dataset)
-
-
-        ]
-    new-ds
-    )
-  )
 
 
 (defn fit-transform
@@ -89,19 +80,7 @@
            (-> feature-ds (dst/dataset->tensor) ->numpy)
            (-> feature-ds ds/columns first ))
        raw-result (py. estimator fit_transform X)
-
-       raw-type (python-type raw-result)
-
-       result (case raw-type
-                :csr-matrix (py. raw-result toarray)
-                :ndarray raw-result
-                )
-
-       new-ds
-       (->
-        result
-        ->jvm
-        dst/tensor->dataset)
+       new-ds (raw-tf-result->ds raw-result)
        new-ds  (if (nil? inference-target-ds)
                  new-ds
                  (ds/append-columns new-ds (ds/columns inference-target-ds)))]
@@ -146,20 +125,13 @@
         feature-ds (cf/feature ds)
         column-names (ds/column-names feature-ds)
         X (-> feature-ds (dst/dataset->tensor) ->numpy)
-        X-transformed
-        (-> (py. estimator transform X )
-            (t/ensure-tensor)
-            ->jvm
-            (dst/tensor->dataset))]
+        raw-result (py. estimator transform X )
+        X-transformed (raw-tf-result->ds raw-result )]
     (ds/rename-columns
      X-transformed
      (zipmap
       (ds/column-names X-transformed)
       column-names))))
-
-
-
-
 
 (comment
 
