@@ -13,7 +13,7 @@ As all estimators in sklearn uses the same interface, it should work for all est
 
 Setup libpython-clj including sklearn.
 If you need to call py/initialize! as part of your libpython-clj setup, this needs to happen before require
-the other names spaces 
+the other names spaces. This can be done easely by adding a `user.clj` file which contains the call to `py/initialize!`" 
 
 ```clojure
 
