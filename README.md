@@ -1,3 +1,5 @@
+[![Clojars Project](https://img.shields.io/clojars/v/scicloj/sklearn-clj.svg)](https://clojars.org/scicloj/sklearn-clj)
+
 # sklearn-clj
 
 This library gives easy access to all estimators from sklearn in a Clojure friendly way,
