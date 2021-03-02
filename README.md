@@ -1,3 +1,5 @@
+[![Clojars Project](https://img.shields.io/clojars/v/scicloj/sklearn-clj.svg)](https://clojars.org/scicloj/sklearn-clj)
+
 # sklearn-clj
 
 This library gives easy access to all estimators from sklearn in a Clojure friendly way,
@@ -12,8 +14,9 @@ As all estimators in sklearn uses the same interface, it should work for all est
 ## Usage
 
 Setup libpython-clj including sklearn.
-If you need to call py/initialize! as part of your libpython-clj setup, this needs to happen before require
-the other names spaces 
+
+If you need to call `py/initialize!` as part of your libpython-clj setup, this needs to happen before require
+the other namesspaces. This can be done easely by adding a `user.clj` file which contains the call to `py/initialize!`  
 
 ```clojure
 
