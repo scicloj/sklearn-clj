@@ -3,6 +3,7 @@
             [tech.v3.dataset :as ds]
             [tech.v3.dataset.tensor :as dst]
             [tech.v3.tensor :as tensor]
+            [libpython-clj.python :refer [python-type]]
             [tech.v3.datatype.functional :as f]
             [scicloj.sklearn-clj :refer :all]))
 
@@ -13,7 +14,7 @@
             ])
 
 
-(deftest count-vectorizer
+(deftest count-vectorizer-fit-transform
 
   (let [ds (ds/->dataset {:text texts})
         result
@@ -28,7 +29,19 @@
                     [0 2 0 1 0 1 1 0 1]
                     [1 0 0 1 1 0 1 1 1]
                     [0 1 1 1 0 0 1 0 1]]
-                    :datatype :float64)))))
+                   :datatype :float64)))))
+
+(deftest count-vectorizer-fit
+
+  (let [ds (ds/->dataset {:text texts})
+        estimator (fit ds :feature-extraction.text :Count-Vectorizer {})
+        prediction (transform ds estimator {})
+        ]
+    (is (= :count-vectorizer)
+        (python-type estimator))
+
+     prediction
+    ))
 
 (deftest tfidf-vectorizer
 

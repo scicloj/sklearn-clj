@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>sciloj</groupId>
+  <groupId>scicloj</groupId>
   <artifactId>sklearn-clj</artifactId>
-  <version>0.2.1</version>
+  <version>0.2.3</version>
   <name>sklearn-clj</name>
   <description>Use sklearn estimators from Clojure</description>
-  <url>https://github.com/sciloj/sklearn-clj</url>
+  <url>https://github.com/scicloj/sklearn-clj</url>
   <licenses>
     <license>
       <name>Eclipse Public License</name>
