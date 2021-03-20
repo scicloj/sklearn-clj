@@ -2,13 +2,14 @@
 
 # sklearn-clj
 
-This library gives easy access to all estimators from sklearn in a Clojure friendly way,
+This library gives easy access to all estimators and models from sklearn in a Clojure friendly way,
 using internally libpython-clj.
 
 
 It uses a tech.ml.dataset for input and output and converts to python data structures as needed.
+This "should" be zero copy now.
 
-As all estimators in sklearn uses the same interface, it should work for all estimators.
+As all estimators and models in sklearn uses the same interface,  it should work for all estimators.
 
 
 ## Usage
