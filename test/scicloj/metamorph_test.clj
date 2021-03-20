@@ -1,10 +1,19 @@
 (ns scicloj.metamorph-test
+  (:require
+   [tech.v3.dataset.modelling :as ds-mod]
+   [tech.v3.dataset :as ds]
+   [tech.v3.dataset.tensor :as dst]
+   [tech.v3.tensor :as dtt]
 
-  (:require [tech.v3.dataset.modelling :as ds-mod]
-            [tech.v3.dataset :as ds]
-            [scicloj.sklearn-clj.metamorph :as sklearn-mm]
-            [clojure.test :refer [deftest is]]
-            )
+   [tablecloth.api :as tc]
+   [libpython-clj2.python :refer [->jvm   py.- py.
+
+                                 python-type   ]]
+   [libpython-clj2.require :refer [require-python]]
+   [scicloj.sklearn-clj.metamorph :as sklearn-mm]
+   [clojure.test :refer [deftest is]]
+   [scicloj.metamorph.core :as morph]
+   )
 
   )
 
@@ -48,7 +57,7 @@
   (let [pipeline
         (fn [ctx]
           (-> ctx
-              ((sklearn-mm/transform :feature-extraction.text :Count-Vectorizer {}))))
+              ((sklearn-mm/fit-transform :feature-extraction.text :Count-Vectorizer {}))))
 
         fitted
         (pipeline
@@ -65,3 +74,55 @@
     )
 
   )
+
+(deftest svm-pipe
+
+  (let  [XY
+         (->
+          (tc/dataset [ [-1, -1], [-2, -1], [1, 1], [2, 1]] {:layout :as-rows})
+          (tc/add-column :target [1 1 2 2])
+          (ds-mod/set-inference-target :target))
+
+         pipeline
+         (morph/pipeline
+          (sklearn-mm/estimate :preprocessing :standard-scaler {})
+          (sklearn-mm/estimate :svm "SVC" {:gamma "auto"}))
+
+
+         fitted-pipeline
+         (pipeline {:metamorph/data XY
+                    :metamorph/mode :fit})
+
+
+         new-data
+         (->
+          (tc/dataset [ [-0.8 -1]] {:layout :as-rows} )
+          (tc/add-column :target [nil])
+          (ds-mod/set-inference-target :target))
+
+         result
+         (pipeline
+          (merge fitted-pipeline
+                 {:metamorph/data new-data
+                  :metamorph/mode :transform
+                  }))]
+
+    (is (= [1]) (:target result)
+        )))
+
+
+(comment
+  (require-python '[numpy :as np]
+                  '[sklearn.pipeline :refer [make_pipeline]]
+                  '[sklearn.preprocessing :refer [StandardScaler]]
+                  '[sklearn.svm :refer [SVC]]
+                  )
+  (def X (np/array [[-1 -1] [-2 -1 ] [1 1] [2 1]] ))
+  (def y (np/array [1 1 2 2]))
+  (def clf (make_pipeline (StandardScaler) (SVC :gamma "auto")))
+  (py. clf fit X y)
+  clf
+  (->jvm
+   (py. clf predict [[-0.8 -1]]))
+  )
+

@@ -1,9 +1,11 @@
 (ns scicloj.sklearn-clj-test
   (:require [clojure.test :refer :all]
             [tech.v3.dataset :as ds]
+            [tech.v3.dataset.modelling :as ds-mod]
+            [tablecloth.api :as tc]
             [tech.v3.dataset.tensor :as dst]
             [tech.v3.tensor :as tensor]
-            [libpython-clj.python :refer [python-type]]
+            [libpython-clj2.python :refer [python-type]]
             [tech.v3.datatype.functional :as f]
             [scicloj.sklearn-clj :refer :all]))
 
@@ -13,23 +15,50 @@
                "Is this the first document?"
             ])
 
+(defn values->ds [values shape datatype]
+  (->
+   (tensor/->tensor values :datatype datatype)
+   (tensor/reshape shape)
+   (dst/tensor->dataset))
+  )
 
 (deftest count-vectorizer-fit-transform
 
-  (let [ds (ds/->dataset {:text texts})
+  (let [ds (ds/->dataset {:text texts
+                          :target (repeat (count texts) 5)})
         result
         (-> ds
-            (fit-transform :feature-extraction.text :Count-Vectorizer {})
-            :ds
-            dst/dataset->tensor
-            )]
-    (is (f/equals result
+            (fit-transform :feature-extraction.text :Count-Vectorizer {}))
+        result-ds (-> result :ds dst/dataset->tensor)
+        result-estimator (:estimator result)
+        ]
+    (is (= :count-vectorizer (python-type result-estimator)))
+    (is (f/equals result-ds
                   (tensor/->tensor
                    [[0 1 1 1 0 0 1 0 1]
                     [0 2 0 1 0 1 1 0 1]
                     [1 0 0 1 1 0 1 1 1]
                     [0 1 1 1 0 0 1 0 1]]
                    :datatype :float64)))))
+
+(deftest count-vectorizer-fit-transform-with-target
+(let [ds (->
+            (ds/->dataset {:text texts
+                           :target (repeat (count texts) 5)})
+            (ds-mod/set-inference-target :target))
+        result
+        (-> ds
+            (fit-transform :feature-extraction.text :Count-Vectorizer {})
+            :ds dst/dataset->tensor)]
+    (is (f/equals result
+                  (tensor/->tensor
+                   [[0 1 1 1 0 0 1 0 1 5]
+                    [0 2 0 1 0 1 1 0 1 5]
+                    [1 0 0 1 1 0 1 1 1 5]
+                    [0 1 1 1 0 0 1 0 1 5]]
+                   :datatype :float64)))))
+
+
 
 (deftest count-vectorizer-fit
 
@@ -40,7 +69,7 @@
     (is (= :count-vectorizer)
         (python-type estimator))
 
-     prediction
+    ;; prediction
     ))
 
 (deftest tfidf-vectorizer
@@ -109,3 +138,65 @@
          [1],
          [1]]
         :datatype :float64))))
+
+
+(def n-arr-1
+  (values->ds [32 nil 28 nil 32 nil nil 34 40]
+              [3 3]
+              :object
+              ))
+
+(def n-arr-2
+  (values->ds [6 9 nil 7 nil nil nil 8 12]
+              [3 3]
+              :object
+              ))
+
+
+
+(deftest impute-1
+  (let [imp (fit n-arr-1 :impute :simple-imputer {})
+        imputed (transform n-arr-2 imp  {})]
+    (is (=
+         (values->ds
+          [6 9 34
+           7 33 34
+           32 8 12]
+          [3 3]
+          :float64
+          )
+         imputed
+         ))
+    ))
+
+(deftest impute-2
+  (let [{:keys [estimator ds]} (fit-transform n-arr-2 :impute :simple-imputer {})
+        ;; imputed (transform n-arr-2 imp  {})
+        ]
+    (is (=
+         (values->ds
+          [6    9   12
+           7    8.5 12
+           6.5  8   12]
+          [3 3]
+          :float64
+          )
+         ds
+         ))
+    ))
+(deftest impute-3
+  (let [estimator (fit n-arr-2 :impute :simple-imputer {})
+        imputed (transform n-arr-2 estimator {})
+        ;; imputed (transform n-arr-2 imp  {})
+        ]
+    (is (=
+         (values->ds
+          [6    9   12
+           7    8.5 12
+           6.5  8   12]
+          [3 3]
+          :float64
+          )
+         imputed
+         ))
+    ))

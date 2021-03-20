@@ -1,7 +1,8 @@
 (ns scicloj.sklearn-clj
   (:require [camel-snake-kebab.core :as csk]
-            libpython-clj.metadata
-            [libpython-clj.python :refer [->jvm ->numpy call-kw py.- py. python-type]]
+            [libpython-clj2.python.np-array]
+            [libpython-clj2.metadata]
+            [libpython-clj2.python :refer [->jvm as-jvm call-attr call-attr-kw cfn py.- py. python-type path->py-obj as-python]]
             [tech.v3.dataset :as ds]
             [tech.v3.dataset.column-filters :as cf]
             [tech.v3.dataset.modelling :as ds-mod]
@@ -9,12 +10,13 @@
 
             [tech.v3.dataset.tensor :as dst]
             [tech.v3.tensor :as t]))
+(defn mapply [f & args] (apply f (apply concat (butlast args) (last args))))
 
 (defn snakify-keys
   "Recursively transforms all map keys from to snake case."
   {:added "1.1"}
   [m]
-  (let [f (fn [[k v]] (if (keyword?  k) [(csk/->snake_case_string k) v] [k v]))]
+  (let [f (fn [[k v]] (if (keyword?  k) [(csk/->snake_case_keyword k) v] [k v]))]
     ;; only apply to maps
     (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
@@ -27,25 +29,24 @@
                      (csk/->PascalCaseString estimator-class)
                      estimator-class)
         estimator-class-name (str "sklearn." module "." class-name)
-        constructor (libpython-clj.metadata/path->py-obj estimator-class-name )]
-    (call-kw constructor [] snakified-kw-args))
+        constructor (path->py-obj estimator-class-name )]
+    (mapply cfn constructor snakified-kw-args))  )
 
 
-  )
 (defn raw-tf-result->ds [raw-result]
   (let [raw-type (python-type raw-result)
         result (case raw-type
                  :csr-matrix (py. raw-result toarray)
                  :ndarray raw-result)
         new-ds
-        (->  result ->jvm dst/tensor->dataset)]
+        (->  result as-jvm dst/tensor->dataset) ]
     new-ds))
 
 (defn ds->X [ds]
   (let [
         string-ds (cf/of-datatype ds :string)
         X (if (nil? string-ds)
-            (-> ds (dst/dataset->tensor) ->numpy)
+            (-> ds (dst/dataset->tensor) t/ensure-tensor as-python)
             (-> ds ds/columns first ))]
     X))
 
@@ -65,63 +66,55 @@
        X (ds->X feature-ds)]
       (if (nil? inference-targets)
         (py. estimator fit X)
-        (let [y (-> inference-targets (dst/dataset->tensor) ->numpy) ]
+        (let [y (-> inference-targets (dst/dataset->tensor) t/ensure-tensor as-python) ]
           (py. estimator fit X y)))))
 
 
-
-(defn fit-transform
-  "Call the fit_transform method of a sklearn transformer, which is specified via
+  (defn fit-transform
+    "Call the fit_transform method of a sklearn transformer, which is specified via
    the two keywords `module-kw` and `estimator-class-kw`.
   Keyword arguments can be given in a map `kw-arguments`.
   The data need to be given as tech.ml.dataset and will be converted to python automaticaly.
   The function will return the  estimator and transformed data as a tech.ml.dataset
   "
-  [ds module-kw estimator-class-kw kw-args]
-  (let
-      [
-       feature-ds (cf/feature ds)
-       inference-target-ds (cf/target ds)
-       estimator (make-estimator module-kw estimator-class-kw kw-args)
-       X (ds->X feature-ds)
-       raw-result (py. estimator fit_transform X)
-       new-ds (raw-tf-result->ds raw-result)
-       new-ds  (if (nil? inference-target-ds)
-                 new-ds
-                 (ds/append-columns new-ds (ds/columns inference-target-ds)))]
-      {:ds new-ds
-       :estimator estimator}))
+    [ds module-kw estimator-class-kw kw-args]
+    (let
+        [
+         feature-ds (cf/feature ds)
+         inference-target-ds (cf/target ds)
+         estimator (make-estimator module-kw estimator-class-kw kw-args)
+         X (ds->X feature-ds)
+         raw-result (py. estimator fit_transform X)
+
+         new-ds (raw-tf-result->ds raw-result)
+         new-ds  (if (nil? inference-target-ds)
+                   new-ds
+                   (ds/append-columns new-ds (ds/columns inference-target-ds)))]
+        {:ds new-ds
+         :estimator estimator}))
 
 
-(defn predict
-  "Calls `predict` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
-  [ds estimator]
-  (let
-      [
-       feature-ds (cf/feature ds)
-       inference-target-column-names (ds-mod/inference-target-column-names ds)
-       X  (ds->X feature-ds)
-       prediction (py. estimator predict X)
-       y_hat-ds
-       (->>
-        prediction
-        (t/ensure-tensor)
-        ->jvm
-        (ds-col/new-column (first inference-target-column-names))
-        vector
-         (ds/new-dataset )
-        )
-       ;; y_hat
-       ;; (->
-       ;;  prediction
-       ;;  (t/ensure-tensor)
-       ;;  ->jvm
-       ;;  (dst/tensor->dataset))
-       ;; y_hat (ds/rename-columns y_hat (zipmap (ds/column-names y_hat) inference-target-column-names))
-       ]
-    (ds/append-columns feature-ds (ds/columns y_hat-ds))))
+  (defn predict
+    "Calls `predict` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
+    [ds estimator]
+    (let
+        [
+         feature-ds (cf/feature ds)
+         inference-target-column-names (ds-mod/inference-target-column-names ds)
+         X  (ds->X feature-ds)
+         prediction (py. estimator predict X)
+         y_hat-ds
+         (->>
+          prediction
+          as-jvm
+          (ds-col/new-column (first inference-target-column-names))
+          vector
+          (ds/new-dataset )
+          )
+         ]
+        (ds/append-columns feature-ds (ds/columns y_hat-ds))))
 
-
+;; (-> prediction as-jvm (ds-col/new-column :x))
 (defn transform
   "Calls `transform` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
   [ds estimator kw-args]
@@ -130,59 +123,22 @@
         column-names (ds/column-names feature-ds)
         X (ds->X feature-ds)
         raw-result (py. estimator transform X )
-        X-transformed (raw-tf-result->ds raw-result )]
-    X-transformed
-    ;; (ds/rename-columns
-    ;;  X-transformed
-    ;;  (zipmap
-    ;;   (ds/column-names X-transformed)
-    ;;   column-names))
-    ))
+        X-transformed (raw-tf-result->ds raw-result )
+        target-ds (cf/target ds)
+        ]
+    (if (nil? target-ds)
+      X-transformed
+      (ds/concat
+       X-transformed
+       (cf/target ds)))))
+
 
 (comment
+  (def est
+    (make-estimator :svm "SVC" {}))
 
-  (require
-   '[libpython-clj.python :refer [py.-]]
-   '[tech.v3.dataset :as ds]
-   '[tech.v3.dataset.modelling :as ds-mod])
+  (contains?
 
-  (def train-ds
-    (-> (ds/->dataset {:x1 [1 1 2 2]
-                  :x2 [1 2 2 3]
-                  :y  [6 8 9 11]})
-     (ds-mod/set-inference-target :y)))
-
-  (def test-ds
-    (->
-     (ds/->dataset {:x1 [3]
-                  :x2 [5]
-                  :y  [0]})
-     (ds-mod/set-inference-target :y)))
-
-  (def lin-reg
-    (fit train-ds :linear-model :linear-regression {}))
-
-  (predict test-ds lin-reg {})
-  ;; => _unnamed [1 3]:
-  ;;    | :x1 | :x2 |   :y |
-  ;;    |-----|-----|------|
-  ;;    |   3 |   5 | 16.0 |
-
-
-  (def data
-    (ds/->dataset {:x1 [0 0 1 1]
-                 :x2 [0 0 1 1]}))
-  (def scaler
-    (fit data :preprocessing :standard-scaler {}))
-
-  (py.- scaler mean_)
-  ;; => [0.5 0.5]
-  ;;
-  (transform (ds/->dataset {:x1 [2] :x2 [2]})  scaler {})
-  ;; => :_unnamed [1 2]:
-  ;;    | :x1 | :x2 |
-  ;;    |-----|-----|
-  ;;    | 3.0 | 3.0 |
-
-
+   (libpython-clj2.python/dir est)
+   "predict")
   )
