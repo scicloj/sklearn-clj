@@ -23,7 +23,7 @@ the other namesspaces. This can be done easely by adding a `user.clj` file which
 
  
   (require
-   '[libpython-clj.python :refer [py.-]]
+   '[libpython-clj2.python :refer [py.-]]
    '[tech.v3.dataset :as ds]
    '[tech.v3.dataset.modelling :as ds-mod]
    '[scicloj.sklearn-clj :refer :all]
