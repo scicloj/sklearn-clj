@@ -82,7 +82,7 @@ The library provides as well an adaptor to the scicloj [metamorph](https://githu
 
 
 ```clojure
-(:require [scicloj.sklearn-clj.metamorph :as sklearn-mm])
+(require '[scicloj.sklearn-clj.metamorph :as sklearn-mm])
 
 ;; adding this as a pipeline operation somewhere in the pipeline
 ;; The estimate functon will do the right thing, depending on the :metamorph/mode   key being
@@ -90,6 +90,25 @@ The library provides as well an adaptor to the scicloj [metamorph](https://githu
 (sklearn-mm/estimate :linear-model :linear-regression {})
 ```
 
+
+Alternatively the models can be integrated in tech.ml / Samskara
+
+``` clojure
+(require '[scicloj.sklearn-clj.ml]) ;; registers all models
+(require '[samskara.ml :as ml]
+         '[samskara.metamorph :as mm])
+
+
+(ml/pipeline
+    ;; usual setup of pipeline with preparation of
+    ;; dataset
+    (mm/model {:model-type :sklearn.classification/ada-boost-classifier})
+         
+```
+
+All available models with their key, options and complete documentation are listed here:
+
+https://behrica.github.io/samskara/userguide-sklearnclj.html
 
 ## License
 
