@@ -21,7 +21,7 @@
     (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
 
-(defn- make-estimator [module-kw estimator-class kw-args]
+(defn make-estimator [module-kw estimator-class kw-args]
   (let [
         snakified-kw-args (snakify-keys kw-args)
         module (csk/->snake_case_string module-kw)
@@ -96,23 +96,25 @@
 
   (defn predict
     "Calls `predict` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
-    [ds estimator]
-    (let
-        [
-         feature-ds (cf/feature ds)
-         inference-target-column-names (ds-mod/inference-target-column-names ds)
-         X  (ds->X feature-ds)
-         prediction (py. estimator predict X)
-         y_hat-ds
-         (->>
-          prediction
-          as-jvm
-          (ds-col/new-column (first inference-target-column-names))
-          vector
-          (ds/new-dataset )
-          )
-         ]
-        (ds/append-columns feature-ds (ds/columns y_hat-ds))))
+    ([ds estimator inference-target-column-names]
+     (let
+         [
+          feature-ds (cf/feature ds)
+          X  (ds->X feature-ds)
+          prediction (py. estimator predict X)
+          y_hat-ds
+          (->>
+           prediction
+           as-jvm
+           (ds-col/new-column (first inference-target-column-names))
+           vector
+           (ds/new-dataset )
+           )
+          ]
+       (ds/append-columns feature-ds (ds/columns y_hat-ds))))
+    ([ds estimator]
+     (predict ds estimator (ds-mod/inference-target-column-names ds)))
+    )
 
 ;; (-> prediction as-jvm (ds-col/new-column :x))
 (defn transform

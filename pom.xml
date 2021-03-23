@@ -31,14 +31,14 @@
       <version>1.10.1</version>
     </dependency>
     <dependency>
-      <groupId>techascent</groupId>
-      <artifactId>tech.ml.dataset</artifactId>
-      <version>5.00-beta-29</version>
+      <groupId>scicloj</groupId>
+      <artifactId>tablecloth</artifactId>
+      <version>5.04</version>
     </dependency>
     <dependency>
       <groupId>clj-python</groupId>
       <artifactId>libpython-clj</artifactId>
-      <version>2.00-alpha-7</version>
+      <version>2.00-beta-12</version>
     </dependency>
   </dependencies>
   <build>
