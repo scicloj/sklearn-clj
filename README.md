@@ -94,12 +94,12 @@ The library provides as well an adaptor to the scicloj [metamorph](https://githu
 ```
 
 
-Alternatively the models can be integrated in tech.ml / [Samskara](https://github.com/behrica/samskara/tree/main/userguide/samskara)
+Alternatively the models can be integrated in tech.ml / [scicloj.ml](https://github.com/scicloj/scicloj.ml)
 
 ``` clojure
 (require '[scicloj.sklearn-clj.ml]) ;; registers all models
-(require '[samskara.ml :as ml]
-         '[samskara.metamorph :as mm])
+(require '[scicloj.ml.core :as ml]
+         '[scicloj.ml.metamorph :as mm])
 
 
 (ml/pipeline
@@ -111,11 +111,12 @@ Alternatively the models can be integrated in tech.ml / [Samskara](https://githu
 
 All available models with their key, options and complete documentation are listed here:
 
-https://behrica.github.io/samskara/userguide-sklearnclj.html
+
+https://scicloj.github.io/scicloj.ml/userguide-sklearnclj.html
 
 ## License
 
-Copyright © 2021 Carsten Behring
+Copyright © 2021 Scicloj
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
