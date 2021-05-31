@@ -61,7 +61,7 @@
 
     (run!
      (fn [{:keys [module-name class-name ]}]
-       (println module-name class-name)
+       ;; (println module-name class-name)
        (let [estimator (sklearn/make-estimator module-name class-name {})
              params
              (->jvm (py. estimator get_params))
@@ -88,17 +88,6 @@
 
 
 
-
-
-
-
-;; (ml/define-model!
-;;   :sklearn-clj/linear-regression
-;;   (make-train-fn :linear-model :linear-regression)
-;;   predict
-;;   {}
-;;   )
-
 (define-estimators! "regressor")
 (define-estimators! "classifier")
 
@@ -109,23 +98,26 @@
   (def trained-model
     (ml/train ds {:model-type :sklearn-clj/classifier.logistic-regression}))
 
-  (ml/predict ds trained-model))
+  (ml/predict ds trained-model)
 
-(def nu-svc
-  (sklearn/make-estimator "svm" "SVC" {}))
 
-(py. nu-svc __class__)
-(py.- nu-svc __module__)
-(py.-
- (py.- nu-svc __class__)
- __module__
- )
 
-(as-jvm nu-svc)
+  (def nu-svc
+    (sklearn/make-estimator "svm" "SVC" {}))
 
-(libpython-clj2.metadata/py-class-argspec nu-svc)
+  (py. nu-svc __class__)
+  (py.- nu-svc __module__)
+  (py.-
+   (py.- nu-svc __class__)
+   __module__
+   )
 
-(->
-         (cfn
-          (path->py-obj "sklearn.utils.all_estimators")
-          ) as-jvm)
+  (as-jvm nu-svc)
+
+  (libpython-clj2.metadata/py-class-argspec nu-svc)
+
+  (->
+   (cfn
+    (path->py-obj "sklearn.utils.all_estimators")
+    ) as-jvm)
+  )
