@@ -7,9 +7,33 @@
             [tech.v3.dataset.column-filters :as cf]
             [tech.v3.dataset.modelling :as ds-mod]
             [tech.v3.dataset.column :as ds-col]
+            [tech.v3.datatype.errors :as errors]
 
             [tech.v3.dataset.tensor :as dst]
             [tech.v3.tensor :as t]))
+
+(defmacro when-error
+  "Throw an error in the case where expr is true."
+  [expr error-msg]
+  {:style/indent 1}
+  `(when ~expr
+     (throw (Exception. ~error-msg))))
+(defmacro xor
+  "Evaluates exprs one at a time, from left to right.  If only one form returns
+  a logical true value (neither nil nor false), returns true.  If more than one
+  value returns logical true or no value returns logical true, retuns a logical
+  false value.  As soon as two logically true forms are encountered, no
+  remaining expression is evaluated.  (xor) returns nil."
+  ([] nil)
+  ([f & r]
+   `(loop [t# false f# '[~f ~@r]]
+      (if-not (seq f#) t#
+              (let [fv# (eval (first f#))]
+                (cond
+                  (and t# fv#) false
+                  (and (not t#) fv#) (recur true (rest f#))
+                  :else (recur t# (rest f#))))))))
+
 (defn mapply [f & args] (apply f (apply concat (butlast args) (last args))))
 
 (defn snakify-keys
@@ -45,9 +69,18 @@
 (defn ds->X [ds]
   (let [
         string-ds (cf/of-datatype ds :string)
+        numeric-ds (cf/numeric ds)
+        _ (when-error  (and (some? string-ds) (some? numeric-ds))
+            "Dataset contains numeric and non-numeric features, which is not supported.")
+
         X (if (nil? string-ds)
             (-> ds (dst/dataset->tensor) t/ensure-tensor as-python)
-            (-> ds ds/columns first ))]
+
+            (do
+              (errors/when-not-error (= 1 (ds/column-count string-ds))
+                                     "Dataset contains more then 1 string column, which is not supported."
+                                     )
+              (-> ds ds/columns first )))]
     X))
 
 
@@ -61,6 +94,8 @@
   [ds module-kw estimator-class-kw kw-args]
   (let
       [inference-targets (cf/target ds)
+       _ (def inference-targets inference-targets)
+       inference-targets (cf/numeric inference-targets)
        feature-ds (cf/feature ds)
        estimator (make-estimator module-kw estimator-class-kw kw-args)
        X (ds->X feature-ds)]
@@ -102,6 +137,7 @@
           feature-ds (cf/feature ds)
           X  (ds->X feature-ds)
           prediction (py. estimator predict X)
+
           y_hat-ds
           (->>
            prediction

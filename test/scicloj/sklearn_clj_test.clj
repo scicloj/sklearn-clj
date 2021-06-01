@@ -5,9 +5,17 @@
             [tablecloth.api :as tc]
             [tech.v3.dataset.tensor :as dst]
             [tech.v3.tensor :as tensor]
-            [libpython-clj2.python :refer [python-type]]
+            [libpython-clj2.python :refer [python-type] :as py]
             [tech.v3.datatype.functional :as f]
-            [scicloj.sklearn-clj :refer :all]))
+            [scicloj.metamorph.ml.toydata :as toydata]
+            [scicloj.metamorph.ml :as ml]
+            [scicloj.metamorph.core :as mm]
+            [scicloj.sklearn-clj :refer :all]
+            [tablecloth.pipeline :as tcm]
+            [tech.v3.dataset.metamorph :as ds-mm]
+            [scicloj.sklearn-clj.ml]
+
+            ))
 
 (def texts ["This is the first document."
                "This document is the second document."
@@ -22,24 +30,7 @@
    (dst/tensor->dataset))
   )
 
-(deftest count-vectorizer-fit-transform
 
-  (let [ds (ds/->dataset {:text texts
-                          :target (repeat (count texts) 5)})
-        result
-        (-> ds
-            (fit-transform :feature-extraction.text :Count-Vectorizer {}))
-        result-ds (-> result :ds dst/dataset->tensor)
-        result-estimator (:estimator result)
-        ]
-    (is (= :count-vectorizer (python-type result-estimator)))
-    (is (f/equals result-ds
-                  (tensor/->tensor
-                   [[0 1 1 1 0 0 1 0 1]
-                    [0 2 0 1 0 1 1 0 1]
-                    [1 0 0 1 1 0 1 1 1]
-                    [0 1 1 1 0 0 1 0 1]]
-                   :datatype :float64)))))
 
 (deftest count-vectorizer-fit-transform-with-target
 (let [ds (->
@@ -200,3 +191,41 @@
     ))
 
 
+
+(deftest model-svc
+
+  (let [iris-split
+        (->
+         (toydata/iris-ds)
+         (tc/split->seq :holdout {:seed 1234})
+         first)
+
+        pipe-fn
+        (mm/pipeline
+         {:metamorph/id :svc}
+         (ml/model {:model-type :sklearn.classification/svc}))
+
+        fitted-ctx
+        (mm/fit-pipe
+         (:train iris-split)
+         pipe-fn)]
+
+
+    (is (=  {1.0 18, 0.0 15, 2.0 17}
+
+            (->
+             (mm/transform-pipe
+              (:test iris-split)
+              pipe-fn
+              fitted-ctx)
+             :metamorph/data
+             :species
+             frequencies)))))
+
+
+
+(comment
+  (-> fitted-ctx :svc :model-data
+      (py/py.- support_vectors_)
+      ;; py/dir
+      ))

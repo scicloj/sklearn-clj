@@ -105,9 +105,11 @@
           (merge fitted-pipeline
                  {:metamorph/data new-data
                   :metamorph/mode :transform
-                  }))]
+                  }))
+         ]
 
-    (is (= [1]) (:target result)
+    (is (= [1.0] (get-in result [:metamorph/data :target])
+           )
         )))
 
 
