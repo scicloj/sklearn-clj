@@ -3,7 +3,6 @@
             [scicloj.sklearn-clj :as sklearn]
 
             [libpython-clj2.python :refer [dir ->jvm  py.- py. python-type]]
-            [meta]
             ))
 
 (defn estimate [module-kw estimator-class-kw kw-args]

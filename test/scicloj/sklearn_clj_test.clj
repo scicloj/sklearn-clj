@@ -66,10 +66,8 @@
         estimator (fit ds :feature-extraction.text :Count-Vectorizer {})
         prediction (transform ds estimator {})
         ]
-    (is (= :count-vectorizer)
-        (python-type estimator))
-
-    ;; prediction
+    (is (= :count-vectorizer
+           (python-type estimator)))
     ))
 
 (deftest tfidf-vectorizer
