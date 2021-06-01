@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>scicloj</groupId>
   <artifactId>sklearn-clj</artifactId>
-  <version>0.3.0</version>
+  <version>0.3.1-SNAPSHOT</version>
   <name>sklearn-clj</name>
   <description>Use sklearn estimators from Clojure</description>
   <url>https://github.com/scicloj/sklearn-clj</url>
@@ -33,12 +33,17 @@
     <dependency>
       <groupId>scicloj</groupId>
       <artifactId>tablecloth</artifactId>
-      <version>5.04</version>
+      <version>6.00-beta-7</version>
+    </dependency>
+    <dependency>
+      <groupId>scicloj</groupId>
+      <artifactId>metamorph.ml</artifactId>
+      <version>0.3.0-alpha3</version>
     </dependency>
     <dependency>
       <groupId>clj-python</groupId>
       <artifactId>libpython-clj</artifactId>
-      <version>2.00-beta-12</version>
+      <version>2.00-beta-16</version>
     </dependency>
   </dependencies>
   <build>
