@@ -2,14 +2,13 @@
 
 # sklearn-clj
 
-This library gives easy access to all estimators and models from sklearn in a Clojure friendly way,
+This library gives easy access in Clojure to all estimators and models from python scicit-learn,
 using internally libpython-clj.
 
 
-It uses a tech.ml.dataset for input and output and converts to python data structures as needed.
-This "should" be zero copy now.
+It uses a tech.ml.dataset for input and output and converts this data structures to and from python as needed. This "should" be zero copy now.
 
-As all estimators and models in sklearn uses the same interface,  it should work for all estimators.
+As all estimators and models in sklearn uses the same interface,  it works for all estimators.
 
 
 ## Usage
@@ -18,6 +17,10 @@ Setup libpython-clj including sklearn.
 
 If you need to call `py/initialize!` as part of your libpython-clj setup, this needs to happen before require
 the other namesspaces. This can be done easely by adding a `user.clj` file which contains the call to `py/initialize!`  
+
+See here https://github.com/clj-python/libpython-clj#usage for more information how to setup libpython-clj.
+
+
 
 ```clojure
 
@@ -91,12 +94,12 @@ The library provides as well an adaptor to the scicloj [metamorph](https://githu
 ```
 
 
-Alternatively the models can be integrated in tech.ml / [Samskara](https://github.com/behrica/samskara/tree/main/userguide/samskara)
+Alternatively the models can be integrated in tech.ml / [scicloj.ml](https://github.com/scicloj/scicloj.ml)
 
 ``` clojure
 (require '[scicloj.sklearn-clj.ml]) ;; registers all models
-(require '[samskara.ml :as ml]
-         '[samskara.metamorph :as mm])
+(require '[scicloj.ml.core :as ml]
+         '[scicloj.ml.metamorph :as mm])
 
 
 (ml/pipeline
@@ -108,11 +111,12 @@ Alternatively the models can be integrated in tech.ml / [Samskara](https://githu
 
 All available models with their key, options and complete documentation are listed here:
 
-https://behrica.github.io/samskara/userguide-sklearnclj.html
+
+https://scicloj.github.io/scicloj.ml/userguide-sklearnclj.html
 
 ## License
 
-Copyright © 2021 Carsten Behring
+Copyright © 2021 Scicloj
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
