@@ -30,8 +30,9 @@
 
 (defn fit-transform [module-kw estimator-class-kw kw-args]
   (fn [{:metamorph/keys [data id] :as ctx}]
-    (def data data)
-    (def id id)
+    ;; (def data data)
+    ;; (def id id)
+    ;; (def ctx ctx)
     (let [{:keys [ds estimator]} (sklearn/fit-transform data module-kw estimator-class-kw kw-args )]
       (assoc ctx
              :metamorph/data ds

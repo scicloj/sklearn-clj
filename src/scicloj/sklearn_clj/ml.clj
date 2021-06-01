@@ -18,12 +18,15 @@
 
   )
 
-(defn- make-train-fn [module-kw estimator-class-kw]
+(defn- make-train-fn [module-name estimator-class-name]
   (fn [feature-ds label-ds options]
     (let [dataset (-> (ds/concat feature-ds label-ds)
                       (ds-mod/set-inference-target (first (ds/column-names label-ds)))
                       )]
-      (sklearn/fit dataset module-kw estimator-class-kw  (dissoc options :model-type))))
+      (sklearn/fit dataset module-name estimator-class-name
+                   ;; options
+                   (dissoc options :model-type)
+                   )))
 
 
   )
@@ -35,6 +38,17 @@
   (sklearn/predict feature-ds model-data target-columns)
   )
 
+(defn make-names  [f]
+  (let [class-name
+        (py.- (second  f) __name__)
+        module-name
+        (->
+         (py.- (second  f) __module__)
+         (str/replace-first "sklearn." ""))]
+    {:module-name module-name :class-name class-name}))
+
+
+
 
 (defn define-estimators! [filter-s]
   (let [ estimators
@@ -43,16 +57,7 @@
           (path->py-obj "sklearn.utils.all_estimators")
           :type_filter filter-s) as-jvm)
         names
-        (->> (map
-              (fn [f]
-                (let [class-name
-                      (py.- (second  f) __name__)
-                      module-name
-                      (->
-                       (py.- (second  f) __module__)
-                       (str/replace-first "sklearn." ""))]
-                  {:module-name module-name :class-name class-name}))
-              estimators)
+        (->> (map make-names estimators)
              (filter #(not (contains?
                             #{"MultiOutputRegressor" "RegressorChain" "StackingRegressor" "VotingRegressor"
                               "ClassifierChain" "MultiOutputClassifier" "OneVsOneClassifier" "OneVsRestClassifier"
@@ -72,8 +77,7 @@
          (def params params)
          (ml/define-model!
            (keyword  (str "sklearn." (filter-map filter-s)) (csk/->kebab-case-string class-name))
-           (make-train-fn (csk/->kebab-case-keyword module-name)
-                          (csk/->kebab-case-keyword class-name))
+           (make-train-fn module-name class-name)
            predict
            {:documentation {:doc-string doc-string}
             :options
@@ -120,4 +124,19 @@
    (cfn
     (path->py-obj "sklearn.utils.all_estimators")
     ) as-jvm)
+  )
+(comment
+  (def estimators
+    (->
+     (cfn
+      (path->py-obj "sklearn.utils.all_estimators")
+      ) as-jvm)
+    )
+;; (make-names
+;;  (nth estimators 164))
+;; => {:module-name "svm._classes", :class-name "SVC"}
+
+;; (sklearn/make-estimator "svm._classes" :svc {})
+
+
   )
