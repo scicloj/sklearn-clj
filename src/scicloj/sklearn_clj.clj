@@ -93,12 +93,16 @@
   "
   [ds module-kw estimator-class-kw kw-args]
   (let
+      _ (def ds ds)
       [inference-targets (cf/target ds)
        _ (def inference-targets inference-targets)
        inference-targets (cf/numeric inference-targets)
        feature-ds (cf/feature ds)
        estimator (make-estimator module-kw estimator-class-kw kw-args)
        X (ds->X feature-ds)]
+      _ (def estimator estimator)
+      _ (def X X)
+      _ (def inference-targets inference-targets)
       (if (nil? inference-targets)
         (py. estimator fit X)
         (let [y (-> inference-targets (dst/dataset->tensor) t/ensure-tensor as-python) ]
