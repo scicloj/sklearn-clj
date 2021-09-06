@@ -93,8 +93,8 @@
   "
   [ds module-kw estimator-class-kw kw-args]
   (let
-      _ (def ds ds)
       [inference-targets (cf/target ds)
+       _ (def ds ds)
        _ (def inference-targets inference-targets)
        inference-targets (cf/numeric inference-targets)
        feature-ds (cf/feature ds)
