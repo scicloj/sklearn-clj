@@ -8,14 +8,14 @@
    [tablecloth.api :as tc]
    [libpython-clj2.python :refer [->jvm   py.- py.
 
-                                 python-type   ]]
+                                  python-type]]
    [libpython-clj2.require :refer [require-python]]
    [scicloj.sklearn-clj.metamorph :as sklearn-mm]
    [clojure.test :refer [deftest is]]
-   [scicloj.metamorph.core :as morph]
-   )
+   [scicloj.metamorph.core :as morph]))
+   
 
-  )
+  
 
 
 (deftest test-estimate
@@ -24,8 +24,8 @@
           (-> ctx
               ((fn [ctx]
                  (assoc ctx :metamorph/data
-                        (ds-mod/set-inference-target (:metamorph/data ctx) :y))
-                 ))
+                        (ds-mod/set-inference-target (:metamorph/data ctx) :y))))
+                 
               ((sklearn-mm/estimate :linear-model :linear-regression {}))))
 
         fitted
@@ -36,7 +36,7 @@
           :metamorph/data
           (ds/->dataset {:x1 [1 1 2 2]
                          :x2  [1 2 2 3]
-                         :y [6 8 9 11 ]})})
+                         :y [6 8 9 11]})})
 
 
         prediction
@@ -45,12 +45,12 @@
                 {:metamorph/mode :transform
                  :metamorph/data
                  (ds/->dataset {:x1 [3]
-                                :x2  [5 ]
+                                :x2  [5]
                                 :y [0]})}))]
 
     (is (= 16
            (Math/round
-            (first (seq (get-in prediction [:metamorph/data :y] ))))))))
+            (first (seq (get-in prediction [:metamorph/data :y]))))))))
 
 
 (deftest test-transform
@@ -65,15 +65,15 @@
          {:metamorph/id "1"
           :metamorph/mode :fit
           :metamorph/data
-          (ds/->dataset {:text ["hellow world"]})})
+          (ds/->dataset {:text ["hellow world"]})})]
 
-        ]
+        
     (is (= [1]
-           (get-in fitted [:metamorph/data 1] )))
+           (get-in fitted [:metamorph/data 1])))))
 
-    )
+    
 
-  )
+  
 
 (deftest svm-pipe
 
@@ -88,7 +88,8 @@
           (sklearn-mm/estimate :preprocessing :standard-scaler {})
           (sklearn-mm/estimate :svm "SVC" {:gamma "auto"}))
 
-
+         _ (def XY XY)
+         _ (def pipeline pipeline)
          fitted-pipeline
          (pipeline {:metamorph/data XY
                     :metamorph/mode :fit})
@@ -96,35 +97,37 @@
 
          new-data
          (->
-          (tc/dataset [ [-0.8 -1]] {:layout :as-rows} )
+          (tc/dataset [ [-0.8 -1]] {:layout :as-rows})
           (tc/add-column :target [nil])
           (ds-mod/set-inference-target :target))
 
+         _ (def fitted-pipeline fitted-pipeline)
+         _ (def new-data new-data)
          result
          (pipeline
           (merge fitted-pipeline
                  {:metamorph/data new-data
-                  :metamorph/mode :transform
-                  }))
-         ]
+                  :metamorph/mode :transform}))]
+                  
+         
 
-    (is (= [1.0] (get-in result [:metamorph/data :target])
-           )
-        )))
+    (is (= [1.0] (get-in result [:metamorph/data :target])))))
+           
+        
 
 
 (comment
   (require-python '[numpy :as np]
                   '[sklearn.pipeline :refer [make_pipeline]]
                   '[sklearn.preprocessing :refer [StandardScaler]]
-                  '[sklearn.svm :refer [SVC]]
-                  )
-  (def X (np/array [[-1 -1] [-2 -1 ] [1 1] [2 1]] ))
+                  '[sklearn.svm :refer [SVC]])
+                  
+  (def X (np/array [[-1 -1] [-2 -1 ] [1 1] [2 1]]))
   (def y (np/array [1 1 2 2]))
   (def clf (make_pipeline (StandardScaler) (SVC :gamma "auto")))
   (py. clf fit X y)
   clf
   (->jvm
-   (py. clf predict [[-0.8 -1]]))
-  )
+   (py. clf predict [[-0.8 -1]])))
+  
 

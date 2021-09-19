@@ -20,7 +20,7 @@
 
 (defn- make-train-fn [module-name estimator-class-name]
   (fn [feature-ds label-ds options]
-    (let [dataset (-> (ds/concat feature-ds label-ds)
+    (let [dataset (-> (ds/append-columns feature-ds label-ds)
                       (ds-mod/set-inference-target (first (ds/column-names label-ds)))
                       )]
       (sklearn/fit dataset module-name estimator-class-name
@@ -34,9 +34,9 @@
 
 (defn- predict
   [feature-ds thawed-model {:keys [target-columns target-categorical-maps options model-data] :as model}]
+  (def feature-ds feature-ds)
   (def model model)
-  (sklearn/predict feature-ds model-data target-columns)
-  )
+  (sklearn/predict feature-ds model-data target-columns))
 
 (defn make-names  [f]
   (let [class-name
