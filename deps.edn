@@ -1,9 +1,10 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.10.1"}
         clj-python/libpython-clj {:mvn/version "2.000"}
-        ;; scicloj/tablecloth {:mvn/version "6.00-beta-7"}
-        techascent/tech.ml.dataset {:mvn/version "6.020"}
-        scicloj/metamorph.ml       {:mvn/version "0.3.0-beta8"}}
+        scicloj/scicloj.ml {:mvn/version "0.1.0"}}
+
+
+        
 
         
 

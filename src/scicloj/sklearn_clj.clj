@@ -94,15 +94,11 @@
   [ds module-kw estimator-class-kw kw-args]
   (let
       [inference-targets (cf/target ds)
-       _ (def ds ds)
-       _ (def inference-targets inference-targets)
        inference-targets (cf/numeric inference-targets)
+       _ (errors/when-not-error inference-targets "No numeric inference targets found in dataset.")
        feature-ds (cf/feature ds)
        estimator (make-estimator module-kw estimator-class-kw kw-args)
        X (ds->X feature-ds)]
-      _ (def estimator estimator)
-      _ (def X X)
-      _ (def inference-targets inference-targets)
       (if (nil? inference-targets)
         (py. estimator fit X)
         (let [y (-> inference-targets (dst/dataset->tensor) t/ensure-tensor as-python)]
@@ -137,10 +133,7 @@
   "Calls `predict` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
   ([ds estimator inference-target-column-names]
    (let
-       [
-        _ (def ds ds)
-        _ (def estimator estimator)
-        feature-ds (cf/feature ds)
+       [feature-ds (cf/feature ds)
         X  (ds->X feature-ds)
         prediction (py. estimator predict X)
 
@@ -162,9 +155,6 @@
 (defn transform
   "Calls `transform` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
   [ds estimator kw-args]
-  (def ds ds)
-  (def estimator estimator)
-  (def kw-args kw-args)
   (let [snakified-kw-args (snakify-keys kw-args)
         feature-ds (cf/feature ds)
         column-names (ds/column-names feature-ds)

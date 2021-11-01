@@ -99,14 +99,34 @@ Alternatively the models can be integrated in tech.ml / [scicloj.ml](https://git
 ``` clojure
 (require '[scicloj.sklearn-clj.ml]) ;; registers all models
 (require '[scicloj.ml.core :as ml]
-         '[scicloj.ml.metamorph :as mm])
+         '[scicloj.ml.metamorph :as mm]
+         '[scicloj.ml.dataset :as ds]
+         '[libpython-clj2.python :refer [py. py.-]])
+
+(def iris
+  (->
+   (ds/dataset
+    "https://raw.githubusercontent.com/scicloj/metamorph.ml/main/test/data/iris.csv" {:key-fn keyword})))
 
 
-(ml/pipeline
-    ;; usual setup of pipeline with preparation of
-    ;; dataset
-    (mm/model {:model-type :sklearn.classification/ada-boost-classifier})
-         
+(def pipe-fn   
+ (ml/pipeline
+  (mm/set-inference-target :species)
+  (mm/categorical->number [:species])
+  {:metamorph/id :model}
+  (mm/model {:model-type :sklearn.classification/logistic-regression})))
+
+(def trained-ctx (ml/fit-pipe iris pipe-fn))
+
+(def model-object
+  (-> trained-ctx :model :model-data))
+
+
+(py.- model-object coef_)
+;; => [[ 0.53399346 -0.31779319 -0.20533681 -0.93955019]
+;;     [-0.42332856  0.96165291 -2.51935878 -1.08617922]
+;;     [-0.1106649  -0.64385972  2.72469559  2.02572941]]
+
 ```
 
 All available models with their key, options and complete documentation are listed here:
