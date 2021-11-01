@@ -99,13 +99,20 @@ Alternatively the models can be integrated in tech.ml / [scicloj.ml](https://git
 ``` clojure
 (require '[scicloj.sklearn-clj.ml]) ;; registers all models
 (require '[scicloj.ml.core :as ml]
-         '[scicloj.ml.metamorph :as mm])
+         '[scicloj.ml.metamorph :as mm]
+         '[scicloj.ml.dataset :as ds)
 
-
+(def iris
+  (->
+   (ds/dataset
+    "https://raw.githubusercontent.com/scicloj/metamorph.ml/main/test/data/iris.csv" {:key-fn keyword})
+   ))
+(def pipe-fn   
 (ml/pipeline
     ;; usual setup of pipeline with preparation of
     ;; dataset
-    (mm/model {:model-type :sklearn.classification/ada-boost-classifier})
+    (mm/set-inference-target :species)
+    (mm/model {:model-type :sklearn.classification/ada-boost-classifier})))
          
 ```
 
