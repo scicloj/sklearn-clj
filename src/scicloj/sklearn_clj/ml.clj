@@ -20,7 +20,7 @@
     (let [dataset (-> (ds/append-columns feature-ds label-ds)
                       (ds-mod/set-inference-target (first (ds/column-names label-ds))))]
                       
-      (sklearn/fit dataset module-name estimator-class-name
+      (sklearn/fit dataset (str "sklearn."  module-name) estimator-class-name
                    ;; options
                    (dissoc options :model-type)))))
                    
@@ -62,7 +62,7 @@
     (run!
      (fn [{:keys [module-name class-name]}]
        ;; (println module-name class-name)
-       (let [estimator (sklearn/make-estimator module-name class-name {})
+       (let [estimator (sklearn/make-estimator (str "sklearn." module-name) class-name {})
              params
              (->jvm (py. estimator get_params))
              doc-string (py.- estimator __doc__)]

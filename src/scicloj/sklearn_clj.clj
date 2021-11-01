@@ -52,7 +52,7 @@
         class-name (if (keyword? estimator-class)
                      (csk/->PascalCaseString estimator-class)
                      estimator-class)
-        estimator-class-name (str "sklearn." module "." class-name)
+        estimator-class-name (str module "." class-name)
         constructor (path->py-obj estimator-class-name)]
     (mapply cfn constructor snakified-kw-args)))
 
@@ -93,16 +93,19 @@
   "
   [ds module-kw estimator-class-kw kw-args]
   (let
-      [inference-targets (cf/target ds)
-       inference-targets (cf/numeric inference-targets)
-       _ (errors/when-not-error inference-targets "No numeric inference targets found in dataset.")
-       feature-ds (cf/feature ds)
-       estimator (make-estimator module-kw estimator-class-kw kw-args)
-       X (ds->X feature-ds)]
-      (if (nil? inference-targets)
+      [feature-ds (cf/feature ds)
+       X (ds->X feature-ds)
+       estimator (make-estimator module-kw estimator-class-kw (dissoc kw-args :unsupervised?))]
+
+      (if (kw-args :unsupervised?)
         (py. estimator fit X)
-        (let [y (-> inference-targets (dst/dataset->tensor) t/ensure-tensor as-python)]
+        (let [
+              inference-targets (cf/target ds)
+              inference-targets (cf/numeric inference-targets)
+              _ (errors/when-not-error inference-targets "No numeric inference targets found in dataset.")
+              y (-> inference-targets (dst/dataset->tensor) t/ensure-tensor as-python)]
           (py. estimator fit X y)))))
+
 
 
 (defn fit-transform
@@ -117,7 +120,7 @@
       [
        feature-ds (cf/feature ds)
        inference-target-ds (cf/target ds)
-       estimator (make-estimator module-kw estimator-class-kw kw-args)
+       estimator (make-estimator module-kw estimator-class-kw (dissoc  kw-args :unsupervised?))
        X (ds->X feature-ds)
        raw-result (py. estimator fit_transform X)
 
@@ -171,8 +174,12 @@
 
 
 (comment
-  (def est
-    (make-estimator :svm "SVC" {}))
+  (make-estimator :umap "UMAP" {})
+  (make-estimator :sklearn.svm "SVC" {})
+  (make-estimator :sklearn.svm "SVC" {})
+  (def est)
+
+
 
   (contains?
 
