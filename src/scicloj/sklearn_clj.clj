@@ -87,6 +87,13 @@
     X))
 
 
+(defn prepare-python [ds module-kw estimator-class-kw kw-args]
+  {:estimator (make-estimator module-kw estimator-class-kw kw-args)
+   :inference-target (cf/target ds)
+   :X (-> ds cf/feature ds->X)
+   :y (some->  ds cf/target dst/dataset->tensor t/ensure-tensor as-python)})
+
+
 (defn fit
   "Call the fit method of a sklearn transformer, which is specified via
    the two keywords `module-kw` and `estimator-class-kw`.
@@ -94,22 +101,13 @@
   The data need to be given as tech.ml.dataset and will be converted to python automaticaly.
   The function will return the estimator as a python object.
   "
-  [ds module-kw estimator-class-kw kw-args]
-  (let
-      [feature-ds (cf/feature ds)
-       X (ds->X feature-ds)
-       estimator (make-estimator module-kw estimator-class-kw (dissoc kw-args :unsupervised?))]
-
-      (if (kw-args :unsupervised?)
-        (py. estimator fit X)
-        (let [
-              inference-targets (cf/target ds)
-              inference-targets (cf/numeric inference-targets)
-              _ (errors/when-not-error inference-targets "No numeric inference targets found in dataset.")
-              y (-> inference-targets (dst/dataset->tensor) t/ensure-tensor as-python)]
-          (py. estimator fit X y)))))
-
-
+  ([ds module-kw estimator-class-kw]
+   (fit ds module-kw estimator-class-kw {}))
+  ([ds module-kw estimator-class-kw kw-args]
+   (let [{:keys [estimator X y]} (prepare-python ds module-kw estimator-class-kw kw-args)]
+     (if y
+       (py. estimator fit X y)
+       (py. estimator fit X)))))
 
 (defn fit-transform
   "Call the fit_transform method of a sklearn transformer, which is specified via
@@ -118,21 +116,18 @@
   The data need to be given as tech.ml.dataset and will be converted to python automaticaly.
   The function will return the  estimator and transformed data as a tech.ml.dataset
   "
-  [ds module-kw estimator-class-kw kw-args]
-  (let
-      [
-       feature-ds (cf/feature ds)
-       inference-target-ds (cf/target ds)
-       estimator (make-estimator module-kw estimator-class-kw (dissoc  kw-args :unsupervised?))
-       X (ds->X feature-ds)
-       raw-result (py. estimator fit_transform X)
+  ([ds module-kw estimator-class-kw]
+   (fit-transform ds module-kw estimator-class-kw {}))
+  ([ds module-kw estimator-class-kw kw-args]
 
-       new-ds (raw-tf-result->ds raw-result)
-       new-ds  (if (nil? inference-target-ds)
-                 new-ds
-                 (ds/append-columns new-ds (ds/columns inference-target-ds)))]
-      {:ds new-ds
-       :estimator estimator}))
+   (let [{:keys [estimator X y inference-target]} (prepare-python ds module-kw estimator-class-kw kw-args)
+         raw-result (py. estimator fit_transform X)
+         new-ds (raw-tf-result->ds raw-result)
+         new-ds (if (nil? inference-target)
+                  new-ds
+                  (ds/append-columns new-ds (ds/columns inference-target)))]
+     {:ds new-ds
+      :estimator estimator})))
 
 
 (defn predict
@@ -142,38 +137,26 @@
        [feature-ds (cf/feature ds)
         X  (ds->X feature-ds)
         prediction (py. estimator predict X)
-
-        y_hat-ds
-        (->>
-         prediction
-         as-jvm
-         (ds-col/new-column (first inference-target-column-names))
-         vector
-         (ds/new-dataset))]
-           
-          
-     (ds/append-columns feature-ds (ds/columns y_hat-ds))))
+        y_hat-ds (ds/->dataset {(first inference-target-column-names) prediction})]
+      (ds/append-columns feature-ds (ds/columns y_hat-ds))))
   ([ds estimator]
    (predict ds estimator (ds-mod/inference-target-column-names ds))))
     
 
-;; (-> prediction as-jvm (ds-col/new-column :x))
 (defn transform
   "Calls `transform` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
-  [ds estimator kw-args]
-  (let [snakified-kw-args (snakify-keys kw-args)
-        feature-ds (cf/feature ds)
-        column-names (ds/column-names feature-ds)
-        X (ds->X feature-ds)
-        raw-result (py. estimator transform X)
-        X-transformed (raw-tf-result->ds raw-result)
-        target-ds (cf/target ds)]
-        
-    (if (nil? target-ds)
-      X-transformed
-      (ds/append-columns
+  ([ds estimator]
+   (transform ds estimator {}))
+  ([ds estimator kw-args]
+   (let [X (-> ds cf/feature ds->X)
+         raw-result (py. estimator transform X)
+         X-transformed (raw-tf-result->ds raw-result)
+         target-ds (cf/target ds)]
+     (if (nil? target-ds)
        X-transformed
-       (cf/target ds)))))
+       (ds/append-columns
+        X-transformed
+        (cf/target ds))))))
 
 
 (defn model-attribute-names [sklearn-model]

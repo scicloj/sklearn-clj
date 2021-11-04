@@ -50,7 +50,7 @@ See here https://github.com/clj-python/libpython-clj#usage for more information 
 ;; fit a liner expression model from sklearn, class sklearn.linear_model.LinearRegression
  
   (def lin-reg
-    (fit train-ds :linear-model :linear-regression {}))
+    (fit train-ds :linear-model :linear-regression ))
 
 ;; Call predict with new data on the estimator
   (predict test-ds lin-reg {})
@@ -66,14 +66,14 @@ See here https://github.com/clj-python/libpython-clj#usage for more information 
                  
 ;; fit the scaler on data                 
   (def scaler
-    (fit data :preprocessing :standard-scaler {}))
+    (fit data :preprocessing :standard-scaler))
 
   (py.- scaler mean_)
   ;; => [0.5 0.5]
   ;;
   
 ;; apply the scaling on new data  
-  (transform (ds/->dataset {:x1 [2] :x2 [2]})  scaler {})
+  (transform (ds/->dataset {:x1 [2] :x2 [2]})  scaler)
   ;; => :_unnamed [1 2]:
   ;;    | :x1 | :x2 |
   ;;    |-----|-----|

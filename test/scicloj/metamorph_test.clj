@@ -24,7 +24,7 @@
                  (assoc ctx :metamorph/data
                         (ds-mod/set-inference-target (:metamorph/data ctx) :y))))
                  
-              ((sklearn-mm/estimate :linear-model :linear-regression {}))))
+              ((sklearn-mm/estimate :sklearn.linear-model :linear-regression))))
 
         fitted
         (pipeline
@@ -55,7 +55,7 @@
   (let [pipeline
         (fn [ctx]
           (-> ctx
-              ((sklearn-mm/fit-transform :feature-extraction.text :Count-Vectorizer {}))))
+              ((sklearn-mm/fit-transform :sklearn.feature-extraction.text :Count-Vectorizer))))
 
         fitted
         (pipeline
@@ -83,8 +83,8 @@
 
          pipeline
          (morph/pipeline
-          (sklearn-mm/estimate :preprocessing :standard-scaler {})
-          (sklearn-mm/estimate :svm "SVC" {:gamma "auto"}))
+          (sklearn-mm/estimate :sklearn.preprocessing :standard-scaler)
+          (sklearn-mm/estimate :sklearn.svm "SVC" {:gamma "auto"}))
 
          _ (def XY XY)
          _ (def pipeline pipeline)
