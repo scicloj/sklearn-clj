@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
-
+* 0.3.5
+  * require full module path for estimators
+  * added method to retrieve all attributes of trained model as map
+  
 * 0.3.0
   * adapted to libpython-clj 2.0.0-BETA-12
   * zero copy
