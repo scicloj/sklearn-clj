@@ -165,12 +165,22 @@
    (filter #(and  (clojure.string/ends-with? % "_")
                (not (clojure.string/starts-with? % "_"))))))
 
+(defn save-py-get-attr [sklearn-model attr]
+  ;; can fail in some cases
+  (try (py/get-attr sklearn-model attr)
+       (catch Exception e nil)))
+
+
+
+
 (defn model-attributes [sklearn-model]
-  (map
-   (fn [attr]
-     (hash-map (keyword attr)
-               (py/->jvm (py/get-attr sklearn-model attr))))
-   (model-attribute-names sklearn-model)))
+  (apply merge
+         (map
+          (fn [attr]
+            (hash-map (keyword attr)
+                      (py/->jvm (save-py-get-attr sklearn-model attr))))
+          (model-attribute-names sklearn-model))))
+   
 
 
 (comment

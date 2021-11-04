@@ -84,6 +84,7 @@
          pipeline
          (morph/pipeline
           (sklearn-mm/estimate :sklearn.preprocessing :standard-scaler)
+          {:metamorph/id :model}
           (sklearn-mm/estimate :sklearn.svm "SVC" {:gamma "auto"}))
 
          _ (def XY XY)

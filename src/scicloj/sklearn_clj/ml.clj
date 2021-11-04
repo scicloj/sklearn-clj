@@ -18,11 +18,15 @@
 (defn- make-train-fn [module-name estimator-class-name]
   (fn [feature-ds label-ds options]
     (let [dataset (-> (ds/append-columns feature-ds label-ds)
-                      (ds-mod/set-inference-target (first (ds/column-names label-ds))))]
-                      
-      (sklearn/fit dataset (str "sklearn."  module-name) estimator-class-name
-                   ;; options
-                   (dissoc options :model-type)))))
+                      (ds-mod/set-inference-target (first (ds/column-names label-ds))))
+          estimator (sklearn/fit dataset
+                                 (str "sklearn." module-name)
+                                 estimator-class-name
+
+                                 (dissoc options :model-type))]
+      {:model estimator
+       :attributes (sklearn/model-attributes estimator)})))
+
                    
 
 
@@ -31,7 +35,7 @@
 
 (defn- predict
   [feature-ds thawed-model {:keys [target-columns target-categorical-maps options model-data] :as model}]
-  (sklearn/predict feature-ds model-data target-columns))
+  (sklearn/predict feature-ds thawed-model target-columns))
 
 (defn make-names  [f]
   (let [class-name
@@ -43,7 +47,9 @@
     {:module-name module-name :class-name class-name}))
 
 
-
+(defn- thaw-fn
+  [model-data]
+  (:model model-data))
 
 (defn define-estimators! [filter-s]
   (let [ estimators
@@ -70,7 +76,8 @@
            (keyword  (str "sklearn." (filter-map filter-s)) (csk/->kebab-case-string class-name))
            (make-train-fn module-name class-name)
            predict
-           {:documentation {:doc-string doc-string}
+           {:thaw-fn thaw-fn
+            :documentation {:doc-string doc-string}
             :options
             (map (fn [[k v]]
                    {:name (csk/->kebab-case-keyword k)
