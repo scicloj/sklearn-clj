@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
+
+* 0.3.6
+  * added model attributes to train results
 * 0.3.5
   * require full module path for estimators
   * added method to retrieve all attributes of trained model as map
