@@ -31,19 +31,24 @@
       <version>1.10.1</version>
     </dependency>
     <dependency>
-      <groupId>scicloj</groupId>
-      <artifactId>tablecloth</artifactId>
-      <version>6.00-beta-7</version>
-    </dependency>
-    <dependency>
-      <groupId>scicloj</groupId>
-      <artifactId>metamorph.ml</artifactId>
-      <version>0.3.0-beta5</version>
-    </dependency>
-    <dependency>
       <groupId>clj-python</groupId>
       <artifactId>libpython-clj</artifactId>
-      <version>2.00-beta-16</version>
+      <version>2.003</version>
+    </dependency>
+    <dependency>
+      <groupId>scicloj</groupId>
+      <artifactId>scicloj.ml</artifactId>
+      <version>0.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.cemerick</groupId>
+      <artifactId>pomegranate</artifactId>
+      <version>0.4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.tcrawley</groupId>
+      <artifactId>dynapath</artifactId>
+      <version>0.2.5</version>
     </dependency>
   </dependencies>
   <build>
