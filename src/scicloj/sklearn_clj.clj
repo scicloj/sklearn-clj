@@ -2,7 +2,10 @@
   (:require [camel-snake-kebab.core :as csk]
             [libpython-clj2.python.np-array]
             [libpython-clj2.metadata]
-            [libpython-clj2.python :refer [->jvm as-jvm call-attr call-attr-kw cfn py.- py. python-type path->py-obj as-python]]
+            [libpython-clj2.python :refer [->jvm as-jvm call-attr
+                                           call-attr-kw cfn py.- py.
+                                           python-type path->py-obj as-python] :as py]
+
             [tech.v3.dataset :as ds]
             [tech.v3.dataset.column-filters :as cf]
             [tech.v3.dataset.modelling :as ds-mod]
@@ -173,10 +176,25 @@
        (cf/target ds)))))
 
 
+(defn model-attribute-names [sklearn-model]
+
+  (->> (py/dir sklearn-model)
+   (filter #(and  (clojure.string/ends-with? % "_")
+               (not (clojure.string/starts-with? % "_"))))))
+
+(defn model-attributes [sklearn-model]
+  (map
+   (fn [attr]
+     (hash-map (keyword attr)
+               (py/->jvm (py/get-attr sklearn-model attr))))
+   (model-attribute-names sklearn-model)))
+
+
 (comment
   (make-estimator :umap "UMAP" {})
   (make-estimator :sklearn.svm "SVC" {})
-  (make-estimator :sklearn.svm "SVC" {})
+  (get-model-attributes
+   (make-estimator :sklearn.svm "SVC" {}))
   (def est)
 
 
