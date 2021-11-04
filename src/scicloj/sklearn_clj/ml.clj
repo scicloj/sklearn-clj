@@ -1,15 +1,13 @@
 (ns scicloj.sklearn-clj.ml
-  (:require [scicloj.metamorph.ml :as ml]
-            [clojure.string :as str]
-            [scicloj.sklearn-clj :as sklearn]
-            [tech.v3.dataset :as ds]
-            [tech.v3.dataset.tensor :as dst]
-            [tech.v3.dataset.modelling :as ds-mod]
-            [libpython-clj2.python :refer [->jvm as-jvm call-attr call-attr-kw cfn py.- py. py.. python-type path->py-obj as-python]]
-            [camel-snake-kebab.core :as csk]))
-            
-  
-
+  (:require
+   [camel-snake-kebab.core :as csk]
+   [clojure.string :as str]
+   [libpython-clj2.python :refer [->jvm as-jvm cfn path->py-obj py.-]]
+   [scicloj.metamorph.ml :as ml]
+   [scicloj.sklearn-clj :as sklearn]
+   [tech.v3.dataset :as ds]
+   [tech.v3.dataset.modelling :as ds-mod]
+   [tech.v3.dataset.tensor :as dst]))
 
 (def filter-map
   {"classifier" "classification"
@@ -76,7 +74,7 @@
            (keyword  (str "sklearn." (filter-map filter-s)) (csk/->kebab-case-string class-name))
            (make-train-fn module-name class-name)
            predict
-           {:thaw-fn thaw-fn
+           {:thaw-fn tha
             :documentation {:doc-string doc-string}
             :options
             (map (fn [[k v]]
@@ -93,17 +91,3 @@
 (define-estimators! "regressor")
 (define-estimators! "classifier")
 
-(comment
-  (def ds (-> (dst/tensor->dataset [[0, 0 0 ], [1, 1 1 ], [2, 2 2]])
-              (ds-mod/set-inference-target 2)))
-              
-  (def trained-model
-    (ml/train ds {:model-type :sklearn.classification/ada-boost-classifier}))
-
-
-  (ml/predict ds trained-model))
-
-
-
-
-(comment)

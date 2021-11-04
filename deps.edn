@@ -1,14 +1,15 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.10.1"}
         clj-python/libpython-clj {:mvn/version "2.003"}
-        scicloj/metamorph.ml {:mvn/version "0.4.1"}
+        scicloj/metamorph.ml {:mvn/version "0.4.1"}}
         ;; {:git/url "https://github.com/scicloj/metamorph.ml.git"
         ;;  :git/sha "f8350f3b2b47954b66416e01c5de54915fbd56a6"}
-        scicloj/scicloj.ml {:mvn/version "0.1.1"}}
+        
 
  :aliases
  {:test {:extra-paths ["test"]
-         :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}
+         :extra-deps {scicloj/scicloj.ml {:mvn/version "0.1.1"}
+                      org.clojure/test.check {:mvn/version "1.1.0"}
                       scicloj/metamorph {:mvn/version "0.2.1"}}}
                       
   :runner

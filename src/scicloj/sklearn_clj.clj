@@ -1,19 +1,15 @@
 (ns scicloj.sklearn-clj
-  (:require [camel-snake-kebab.core :as csk]
-            [libpython-clj2.python.np-array]
-            [libpython-clj2.metadata]
-            [libpython-clj2.python :refer [->jvm as-jvm call-attr
-                                           call-attr-kw cfn py.- py.
-                                           python-type path->py-obj as-python] :as py]
-
-            [tech.v3.dataset :as ds]
-            [tech.v3.dataset.column-filters :as cf]
-            [tech.v3.dataset.modelling :as ds-mod]
-            [tech.v3.dataset.column :as ds-col]
-            [tech.v3.datatype.errors :as errors]
-
-            [tech.v3.dataset.tensor :as dst]
-            [tech.v3.tensor :as t]))
+  (:require
+   [camel-snake-kebab.core :as csk]
+   [libpython-clj2.python
+    :as py
+    :refer [as-jvm as-python cfn path->py-obj python-type]]
+   [tech.v3.dataset :as ds]
+   [tech.v3.dataset.column-filters :as cf]
+   [tech.v3.dataset.modelling :as ds-mod]
+   [tech.v3.dataset.tensor :as dst]
+   [tech.v3.datatype.errors :as errors]
+   [tech.v3.tensor :as t]))
 
 (defmacro when-error
   "Throw an error in the case where expr is true."
@@ -21,6 +17,8 @@
   {:style/indent 1}
   `(when ~expr
      (throw (Exception. ~error-msg))))
+
+
 (defmacro xor
   "Evaluates exprs one at a time, from left to right.  If only one form returns
   a logical true value (neither nil nor false), returns true.  If more than one
@@ -180,20 +178,3 @@
             (hash-map (keyword attr)
                       (py/->jvm (save-py-get-attr sklearn-model attr))))
           (model-attribute-names sklearn-model))))
-   
-
-
-(comment
-  (make-estimator :umap "UMAP" {})
-  (make-estimator :sklearn.svm "SVC" {})
-  (get-model-attributes
-   (make-estimator :sklearn.svm "SVC" {}))
-  (def est)
-
-
-
-  (contains?
-
-   (libpython-clj2.python/dir est)
-   "predict"))
-  

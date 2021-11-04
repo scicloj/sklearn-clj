@@ -1,9 +1,7 @@
 (ns scicloj.sklearn-clj.metamorph
-  (:require [tech.v3.dataset.modelling :as ds-mod]
-            [scicloj.sklearn-clj :as sklearn]
-
-            [libpython-clj2.python :refer [dir ->jvm  py.- py. python-type]]))
-            
+  (:require
+   [libpython-clj2.python :refer [dir]]
+   [scicloj.sklearn-clj :as sklearn]))
 
 (defn estimate
   ([module-kw estimator-class-kw]
