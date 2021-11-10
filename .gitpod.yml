@@ -1,0 +1,12 @@
+image:
+  file: .gitpod.Dockerfile
+
+ports:
+  - port: 6080
+    onOpen: open-browser
+  - port: 5900
+    onOpen: ignore
+
+vscode:
+  extensions:
+    - ms-azuretools.vscode-docker
