@@ -3,13 +3,19 @@
    [camel-snake-kebab.core :as csk]
    [libpython-clj2.python
     :as py
-    :refer [as-jvm as-python cfn path->py-obj python-type]]
+    :refer [as-jvm as-python cfn path->py-obj python-type py. py.-]]
    [tech.v3.dataset :as ds]
    [tech.v3.dataset.column-filters :as cf]
    [tech.v3.dataset.modelling :as ds-mod]
    [tech.v3.dataset.tensor :as dst]
    [tech.v3.datatype.errors :as errors]
-   [tech.v3.tensor :as t]))
+   [tech.v3.tensor :as t]
+   [libpython-clj2.python.np-array]))
+
+(println  "'sklearn' version found: "
+          (get
+           (py/module-dict (py/import-module "sklearn"))
+           "__version__"))
 
 (defmacro when-error
   "Throw an error in the case where expr is true."
@@ -19,21 +25,6 @@
      (throw (Exception. ~error-msg))))
 
 
-(defmacro xor
-  "Evaluates exprs one at a time, from left to right.  If only one form returns
-  a logical true value (neither nil nor false), returns true.  If more than one
-  value returns logical true or no value returns logical true, retuns a logical
-  false value.  As soon as two logically true forms are encountered, no
-  remaining expression is evaluated.  (xor) returns nil."
-  ([] nil)
-  ([f & r]
-   `(loop [t# false f# '[~f ~@r]]
-      (if-not (seq f#) t#
-              (let [fv# (eval (first f#))]
-                (cond
-                  (and t# fv#) false
-                  (and (not t#) fv#) (recur true (rest f#))
-                  :else (recur t# (rest f#))))))))
 
 (defn mapply [f & args] (apply f (apply concat (butlast args) (last args))))
 
@@ -59,12 +50,13 @@
 
 
 (defn raw-tf-result->ds [raw-result]
+  (def raw-result raw-result)
   (let [raw-type (python-type raw-result)
         result (case raw-type
                  :csr-matrix (py. raw-result toarray)
                  :ndarray raw-result)
         new-ds
-        (->  result as-jvm dst/tensor->dataset)]
+        (->  result py/->jvm dst/tensor->dataset)]
     new-ds))
 
 (defn ds->X [ds]
@@ -103,6 +95,7 @@
    (fit ds module-kw estimator-class-kw {}))
   ([ds module-kw estimator-class-kw kw-args]
    (let [{:keys [estimator X y]} (prepare-python ds module-kw estimator-class-kw kw-args)]
+     (def X_1 X)
      (if y
        (py. estimator fit X y)
        (py. estimator fit X)))))
@@ -133,13 +126,20 @@
   ([ds estimator inference-target-column-names]
    (let
        [feature-ds (cf/feature ds)
+        _ (def feature-ds feature-ds)
         X  (ds->X feature-ds)
+        _ (def X X)
+        _ (def estimator estimator)
         prediction (py. estimator predict X)
+        _ (def prediction prediction)
+        _ (def inference-target-column-names inference-target-column-names)
         y_hat-ds (ds/->dataset {(first inference-target-column-names) prediction})]
       (ds/append-columns feature-ds (ds/columns y_hat-ds))))
   ([ds estimator]
    (predict ds estimator (ds-mod/inference-target-column-names ds))))
-    
+
+
+
 
 (defn transform
   "Calls `transform` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
@@ -178,3 +178,34 @@
             (hash-map (keyword attr)
                       (py/->jvm (save-py-get-attr sklearn-model attr))))
           (model-attribute-names sklearn-model))))
+
+(comment
+  (py/run-simple-string "import numpy as np")
+  (def env (py/run-simple-string "x=np.array([1, 2, 3, 4])"))
+  (def env (py/run-simple-string "y=np.array([[1], [2]])"))
+  (def env (py/run-simple-string "x_shape=x.shape"))
+  (def env (py/run-simple-string "y_shape=y.shape"))
+
+  (->
+   (py/get-item (:globals env) "x")
+   (py/->jvm))
+  ;; => [1 2 3 4]
+
+  (->
+   (py/get-item (:globals env) "x_shape")
+   (py/->jvm))
+  ;; => [4]
+
+  (->
+   (py/get-item (:globals env) "y")
+   (py/->jvm))
+  ;; => [[1] [2]]
+
+  (->
+   (py/get-item (:globals env) "y_shape")
+   (py/->jvm))
+  ;; => [2 1]
+
+  (->
+   (py.- (py/get-item (:globals env) "x") shape)
+   (py/->jvm)))

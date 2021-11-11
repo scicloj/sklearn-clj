@@ -42,13 +42,14 @@
          (merge fitted
                 {:metamorph/mode :transform
                  :metamorph/data
-                 (ds/->dataset {:x1 [3]
-                                :x2  [5]
-                                :y [0]})}))]
-
+                 (ds/->dataset {:x1 [3 7]
+                                :x2  [5 8]
+                                :y [0 0]})}))]
+    (def prediction prediction)
     (is (= 16
            (Math/round
             (first (seq (get-in prediction [:metamorph/data :y]))))))))
+
 
 
 (deftest test-transform

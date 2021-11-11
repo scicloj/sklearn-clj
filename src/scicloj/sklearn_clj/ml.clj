@@ -2,12 +2,11 @@
   (:require
    [camel-snake-kebab.core :as csk]
    [clojure.string :as str]
-   [libpython-clj2.python :refer [->jvm as-jvm cfn path->py-obj py.-]]
+   [libpython-clj2.python :refer [->jvm as-jvm cfn path->py-obj py.- py.]]
    [scicloj.metamorph.ml :as ml]
    [scicloj.sklearn-clj :as sklearn]
    [tech.v3.dataset :as ds]
-   [tech.v3.dataset.modelling :as ds-mod]
-   [tech.v3.dataset.tensor :as dst]))
+   [tech.v3.dataset.modelling :as ds-mod]))
 
 (def filter-map
   {"classifier" "classification"
@@ -74,7 +73,7 @@
            (keyword  (str "sklearn." (filter-map filter-s)) (csk/->kebab-case-string class-name))
            (make-train-fn module-name class-name)
            predict
-           {:thaw-fn tha
+           {:thaw-fn thaw-fn
             :documentation {:doc-string doc-string}
             :options
             (map (fn [[k v]]
