@@ -38,5 +38,5 @@ WORKDIR /home/user
 # is this a hack ?
 RUN cp /usr/local/bin/APserver /home/user
 RUN pip3 install umap-learn numpy==1.20
-
+RUN pip3 install pandas
 CMD ["python3", "-c", "import cljbridge\ncljbridge.init_clojure_repl(port=12345,bind='0.0.0.0')"]

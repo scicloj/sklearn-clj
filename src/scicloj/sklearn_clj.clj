@@ -1,6 +1,7 @@
 (ns scicloj.sklearn-clj
   (:require
    [camel-snake-kebab.core :as csk]
+   [libpython-clj2.require :refer [require-python]]
    [libpython-clj2.python
     :as py
     :refer [as-jvm as-python cfn path->py-obj python-type py. py.-]]
@@ -9,8 +10,21 @@
    [tech.v3.dataset.modelling :as ds-mod]
    [tech.v3.dataset.tensor :as dst]
    [tech.v3.datatype.errors :as errors]
-   [tech.v3.tensor :as t]
-   [libpython-clj2.python.np-array]))
+   [tech.v3.tensor :as t]))
+   ;; [libpython-clj2.python.np-array]
+
+
+
+
+(defmacro labeled-time
+  "Evaluates expr and prints the time it took.  Returns the value of
+ expr."
+  {:added "1.0"}
+  [label expr]
+  `(let [start# (. System (nanoTime))
+         ret# ~expr]
+     (prn (str ~label  " - " "elapsed time: " (/ (double (- (. System (nanoTime)) start#)) 1000000.0) " msecs"))
+     ret#))
 
 (println  "'sklearn' version found: "
           (get
@@ -48,16 +62,25 @@
         constructor (path->py-obj estimator-class-name)]
     (mapply cfn constructor snakified-kw-args)))
 
+(defn ndarray->ds [pyobject]
+  (->  pyobject
+       py/->jvm
+       dst/tensor->dataset))
+
+(defn numeric-ds->ndarray [ds]
+  (-> ds
+      dst/dataset->tensor
+      py/->python))
 
 (defn raw-tf-result->ds [raw-result]
-  (def raw-result raw-result)
   (let [raw-type (python-type raw-result)
         result (case raw-type
                  :csr-matrix (py. raw-result toarray)
                  :ndarray raw-result)
-        new-ds
-        (->  result py/->jvm dst/tensor->dataset)]
+        new-ds (ndarray->ds result)]
+        
     new-ds))
+
 
 (defn ds->X [ds]
   (let [
@@ -67,7 +90,7 @@
             "Dataset contains numeric and non-numeric features, which is not supported.")
 
         X (if (nil? string-ds)
-            (-> ds (dst/dataset->tensor) t/ensure-tensor as-python)
+            (numeric-ds->ndarray numeric-ds)
 
             (do
               (errors/when-not-error (= 1 (ds/column-count string-ds))
@@ -81,7 +104,10 @@
   {:estimator (make-estimator module-kw estimator-class-kw kw-args)
    :inference-target (cf/target ds)
    :X (-> ds cf/feature ds->X)
-   :y (some->  ds cf/target dst/dataset->tensor t/ensure-tensor as-python)})
+   :y (some-> ds
+              cf/target
+              numeric-ds->ndarray
+              (py. ravel))})
 
 
 (defn fit
@@ -95,7 +121,6 @@
    (fit ds module-kw estimator-class-kw {}))
   ([ds module-kw estimator-class-kw kw-args]
    (let [{:keys [estimator X y]} (prepare-python ds module-kw estimator-class-kw kw-args)]
-     (def X_1 X)
      (if y
        (py. estimator fit X y)
        (py. estimator fit X)))))
@@ -126,13 +151,8 @@
   ([ds estimator inference-target-column-names]
    (let
        [feature-ds (cf/feature ds)
-        _ (def feature-ds feature-ds)
         X  (ds->X feature-ds)
-        _ (def X X)
-        _ (def estimator estimator)
         prediction (py. estimator predict X)
-        _ (def prediction prediction)
-        _ (def inference-target-column-names inference-target-column-names)
         y_hat-ds (ds/->dataset {(first inference-target-column-names) prediction})]
       (ds/append-columns feature-ds (ds/columns y_hat-ds))))
   ([ds estimator]
@@ -160,8 +180,8 @@
 (defn model-attribute-names [sklearn-model]
 
   (->> (py/dir sklearn-model)
-   (filter #(and  (clojure.string/ends-with? % "_")
-               (not (clojure.string/starts-with? % "_"))))))
+       (filter #(and  (clojure.string/ends-with? % "_")
+                      (not (clojure.string/starts-with? % "_"))))))
 
 (defn save-py-get-attr [sklearn-model attr]
   ;; can fail in some cases
@@ -178,6 +198,28 @@
             (hash-map (keyword attr)
                       (py/->jvm (save-py-get-attr sklearn-model attr))))
           (model-attribute-names sklearn-model))))
+
+(comment
+
+  (def big
+    (ds/->dataset
+     (apply merge
+            (map
+             #(hash-map % (seq (range 10000)))
+             (range 10000)))))
+
+  (println
+   (labeled-time
+    "numeric-ds<->ndarray-as"
+    (->
+     big
+     numeric-ds->ndarray
+     ndarray->ds
+     (ds/shape)))))
+
+
+
+
 
 (comment
   (py/run-simple-string "import numpy as np")
@@ -208,4 +250,79 @@
 
   (->
    (py.- (py/get-item (:globals env) "x") shape)
-   (py/->jvm)))
+   (py/->jvm))
+
+
+
+
+  (->  {:a 1}
+       py/as-python
+       (py/py. keys)
+       seq)
+  ;; => ("a")
+
+  (->  {:a 1}
+       py/as-python
+       (py/py. get "a"))
+  ;; => nil
+
+
+     
+
+  (->  {:a 1}
+       py/->python
+       (py/py. keys)
+       py/as-jvm)
+  ;; => dict_keys(['a'])
+
+  (->  {:a 1}
+       py/->python
+       (py/py. get "a"))
+  ;; => 1
+
+
+  (->  {:a 1}
+       py/->py-dict
+       (py/py. keys)
+       py/as-jvm)
+  ;; => dict_keys(['a'])
+
+  (->  {:a 1}
+       py/->py-dict
+       (py/py. get "a"))
+
+
+
+  (require-python '[numpy :as np])
+
+
+  (->
+   (np/array [[1 2] [3 4]])
+   (py/->jvm))
+  ;; => [[1 2] [3 4]]
+
+
+  (require '[libpython-clj2.python.np-array])
+  (->
+   (np/array [[1 2] [3 4]])
+   (py/->jvm))
+  ;; => #tech.v3.tensor<int64>[2 2]
+  [[1 2]
+   [3 4]]
+
+
+  (->
+   (ds/->dataset {:a [1 2 3]})
+   (dst/dataset->tensor)
+   (py/->python))
+  (py/py.- __class__)
+
+  ;; => :ndarray
+
+  (->
+   (ds/->dataset {:a [1 2 3]})
+   (dst/dataset->tensor)
+   (py/as-python)
+   (py/py.- __str__))
+
+  :ok)
