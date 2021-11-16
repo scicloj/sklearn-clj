@@ -9,3 +9,8 @@
 /.nrepl-port
 .hgignore
 .hg/
+.clj-kondo/
+.lsp/
+.settings/
+.project
+.classpath
