@@ -10,8 +10,8 @@
    [tech.v3.dataset.modelling :as ds-mod]
    [tech.v3.dataset.tensor :as dst]
    [tech.v3.datatype.errors :as errors]
-   [tech.v3.tensor :as t]))
-   ;; [libpython-clj2.python.np-array]
+   [tech.v3.tensor :as t]
+   [libpython-clj2.python.np-array]))
 
 
 
@@ -189,14 +189,28 @@
        (catch Exception e nil)))
 
 
+(defn is-object-ndarray? [pyob]
+  (and  (= (python-type pyob) :ndarray)
+        (= (->
+            pyob
+            (py/py.- dtype)
+            (py/py.- name))
+           "object")))
+
+(defn save->jvm [pyob]
+  (if is-object-ndarray?
+    (py/as-jvm pyob)
+    (py/->jvm pyob)))
+
 
 
 (defn model-attributes [sklearn-model]
+  (def sklearn-model sklearn-model)
   (apply merge
          (map
           (fn [attr]
             (hash-map (keyword attr)
-                      (py/->jvm (save-py-get-attr sklearn-model attr))))
+                      (save->jvm (save-py-get-attr sklearn-model attr))))
           (model-attribute-names sklearn-model))))
 
 (comment
@@ -210,7 +224,7 @@
 
   (println
    (labeled-time
-    "numeric-ds<->ndarray-as"
+     :numeric-ds<->ndarray-as
     (->
      big
      numeric-ds->ndarray
