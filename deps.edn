@@ -4,20 +4,23 @@
         scicloj/metamorph.ml {:mvn/version "0.4.1"}}
         ;; {:git/url "https://github.com/scicloj/metamorph.ml.git"
         ;;  :git/sha "f8350f3b2b47954b66416e01c5de54915fbd56a6"}
-        
+
 
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {scicloj/scicloj.ml {:mvn/version "0.1.1"}
                       org.clojure/test.check {:mvn/version "1.1.0"}
                       scicloj/metamorph {:mvn/version "0.2.1"}}}
-  :nrepl {:extra-deps {refactor-nrepl {:mvn/version "3.1.0"}
-                       vlaaad/reveal {:mvn/version "1.3.228"}}}
-  
+  :nREPL
+        {:extra-deps
+          {nrepl/nrepl {:mvn/version "0.8.3"}}}
+
   :reveal {:extra-deps {vlaaad/reveal {:mvn/version "1.3.228"}}
            :ns-default vlaaad.reveal
            :exec-fn repl}
- 
+  
+  :portal {:extra-deps {djblue/portal {:mvn/version "0.18.0"}}}
+
   :deps-tools {:extra-deps {org.clojure/tools.deps.alpha {:mvn/version "0.12.1071"}}}
   :runner
   {:extra-deps {com.cognitect/test-runner

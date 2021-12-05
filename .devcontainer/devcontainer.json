@@ -14,6 +14,9 @@
 	
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
-		"betterthantomorrow.calva"
-	]
+		"betterthantomorrow.calva",
+		"djblue.portal"
+	],
+
+	"postStartCommand": "clojure -P"
 	}
