@@ -8,7 +8,6 @@
    (estimate module-kw estimator-class-kw {}))
   ([module-kw estimator-class-kw kw-args]
    (fn [{:metamorph/keys [id data mode] :as ctx}]
-     (def data data)
      (case mode
 
        :fit (let [estimator (sklearn/fit data module-kw estimator-class-kw kw-args)]

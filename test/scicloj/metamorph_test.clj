@@ -13,9 +13,6 @@
    [scicloj.metamorph.core :as morph]))
    
 
-  
-
-
 (deftest test-estimate
   (let [pipeline
         (fn [ctx]
@@ -88,8 +85,6 @@
           {:metamorph/id :model}
           (sklearn-mm/estimate :sklearn.svm "SVC" {:gamma "auto"}))
 
-         _ (def XY XY)
-         _ (def pipeline pipeline)
          fitted-pipeline
          (pipeline {:metamorph/data XY
                     :metamorph/mode :fit})
@@ -101,8 +96,6 @@
           (tc/add-column :target [nil])
           (ds-mod/set-inference-target :target))
 
-         _ (def fitted-pipeline fitted-pipeline)
-         _ (def new-data new-data)
          result
          (pipeline
           (merge fitted-pipeline
