@@ -2,8 +2,6 @@
  :deps {org.clojure/clojure {:mvn/version "1.10.1"}
         clj-python/libpython-clj {:mvn/version "2.003"}
         scicloj/metamorph.ml {:mvn/version "0.6.0"}}
-        ;; {:git/url "https://github.com/scicloj/metamorph.ml.git"
-        ;;  :git/sha "f8350f3b2b47954b66416e01c5de54915fbd56a6"}
 
 
  :aliases
