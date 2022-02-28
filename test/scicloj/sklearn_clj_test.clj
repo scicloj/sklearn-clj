@@ -13,6 +13,7 @@
             [scicloj.sklearn-clj :refer :all]
             [tablecloth.pipeline :as tcm]
             [tech.v3.dataset.metamorph :as ds-mm]
+            [tech.v3.dataset.column-filters :as cf]
             [scicloj.sklearn-clj.ml]))
 
             
@@ -220,11 +221,3 @@
              :metamorph/data
              :species
              frequencies)))))
-
-
-
-(comment
-  (-> fitted-ctx :svc :model-data
-      (py/py.- support_vectors_)))
-      ;; py/dir
-      

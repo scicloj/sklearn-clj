@@ -11,7 +11,19 @@
    [tech.v3.dataset.tensor :as dst]
    [tech.v3.datatype.errors :as errors]
    [tech.v3.tensor :as t]
+   [tech.v3.datatype :as dt]
    [libpython-clj2.python.np-array]))
+
+
+(defn assert-numeric-ds [ds]
+  (errors/when-not-error
+   (every? true?
+           (map
+            #(-> % meta :datatype tech.v3.datatype.casting/numeric-type?)
+            (ds/columns ds)))
+   "All values of target columns need to be numeric."))
+
+
 
 
 
@@ -68,6 +80,7 @@
        dst/tensor->dataset))
 
 (defn numeric-ds->ndarray [ds]
+  (assert-numeric-ds ds)
   (-> ds
       dst/dataset->tensor
       py/->python))

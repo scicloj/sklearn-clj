@@ -5,7 +5,7 @@
    [tech.v3.dataset.tensor :as dst]
    [tech.v3.tensor :as dtt]
    [tablecloth.api :as tc]
-   [libpython-clj2.python :refer [->jvm   py.- py.
+   [libpython-clj2.python :refer [->jvm py.- py.
                                   python-type]]
    [libpython-clj2.require :refer [require-python]]
    [scicloj.sklearn-clj.metamorph :as sklearn-mm]
