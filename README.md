@@ -119,7 +119,7 @@ Alternatively the models can be integrated in tech.ml / [scicloj.ml](https://git
 (def trained-ctx (ml/fit-pipe iris pipe-fn))
 
 (def model-object
-  (-> trained-ctx :model :model-data))
+  (-> trained-ctx :model :model-data :model))
 
 
 (py.- model-object coef_)
