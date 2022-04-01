@@ -2,7 +2,7 @@
 
 # sklearn-clj
 
-This library gives easy access in Clojure to all estimators and models from python scicit-learn,
+This library gives easy access in Clojure to all estimators and models from python [scikit-learn,](https://scikit-learn.org/)
 using internally libpython-clj.
 
 
