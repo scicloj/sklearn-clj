@@ -132,7 +132,8 @@ Alternatively the models can be integrated in tech.ml / [scicloj.ml](https://git
 All available models with their key, options and complete documentation are listed here:
 
 
-https://scicloj.github.io/scicloj.ml/userguide-sklearnclj.html
+
+https://scicloj.github.io/scicloj.ml-tutorials/userguide-sklearnclj.html
 
 ## License
 
