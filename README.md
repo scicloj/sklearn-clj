@@ -2,7 +2,7 @@
 
 # sklearn-clj
 
-This library gives easy access in Clojure to all estimators and models from python scicit-learn,
+This library gives easy access in Clojure to all estimators and models from python [scikit-learn,](https://scikit-learn.org/)
 using internally libpython-clj.
 
 
@@ -119,7 +119,7 @@ Alternatively the models can be integrated in tech.ml / [scicloj.ml](https://git
 (def trained-ctx (ml/fit-pipe iris pipe-fn))
 
 (def model-object
-  (-> trained-ctx :model :model-data))
+  (-> trained-ctx :model :model-data :model))
 
 
 (py.- model-object coef_)
@@ -132,7 +132,8 @@ Alternatively the models can be integrated in tech.ml / [scicloj.ml](https://git
 All available models with their key, options and complete documentation are listed here:
 
 
-https://scicloj.github.io/scicloj.ml/userguide-sklearnclj.html
+
+https://scicloj.github.io/scicloj.ml-tutorials/userguide-sklearnclj.html
 
 ## License
 
