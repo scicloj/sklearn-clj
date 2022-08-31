@@ -1,5 +1,6 @@
 (ns scicloj.metamorph-test
   (:require
+   [scicloj.sklearn-clj.ml]
    [tech.v3.dataset.modelling :as ds-mod]
    [tech.v3.dataset :as ds]
    [tech.v3.dataset.tensor :as dst]
@@ -10,9 +11,36 @@
    [libpython-clj2.require :refer [require-python]]
    [scicloj.sklearn-clj.metamorph :as sklearn-mm]
    [clojure.test :refer [deftest is]]
+   [scicloj.metamorph.ml :as mm-ml]
    [tech.v3.dataset.column-filters :as ds-cf]
    [scicloj.metamorph.core :as morph]))
    
+
+
+(deftest test-evaluate
+  (let [XY (->
+            (tc/dataset [ [-1, -1], [-2, -1], [1, 1], [2, 1]]
+                        {:layout :as-rows})
+            (tc/add-column :target [1 1 2 2])
+            (ds-mod/set-inference-target :target))
+
+
+
+        pipeline
+        (morph/pipeline
+         (sklearn-mm/estimate :sklearn.preprocessing :standard-scaler)
+         {:metamorph/id :model}
+         (mm-ml/model {:model-type :sklearn.classification/svc
+                       :gamma "auto"}))]
+
+
+    (is (= 1.0
+           (->
+            (mm-ml/evaluate-pipelines [pipeline] [{:train XY :test XY}] scicloj.metamorph.ml.loss/classification-accuracy :loss)
+            first
+            first
+            :test-transform
+            :metric)))))
 
 (deftest test-estimate
   (let [pipeline
