@@ -10,6 +10,7 @@
    [libpython-clj2.require :refer [require-python]]
    [scicloj.sklearn-clj.metamorph :as sklearn-mm]
    [clojure.test :refer [deftest is]]
+   [tech.v3.dataset.column-filters :as ds-cf]
    [scicloj.metamorph.core :as morph]))
    
 
@@ -42,7 +43,10 @@
                  (ds/->dataset {:x1 [3 7]
                                 :x2  [5 8]
                                 :y [0 0]})}))]
-    (def prediction prediction)
+
+
+    (is (= [:y]
+           (ds/column-names (ds-cf/prediction  (:metamorph/data prediction)))))
     (is (= 16
            (Math/round
             (first (seq (get-in prediction [:metamorph/data :y]))))))))

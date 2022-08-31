@@ -163,10 +163,17 @@
   "Calls `predict` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
   ([ds estimator inference-target-column-names]
    (let
-       [feature-ds (cf/feature ds)
+       [first-target-column-name (first inference-target-column-names)
+        feature-ds (cf/feature ds)
         X  (ds->X feature-ds)
         prediction (py. estimator predict X)
-        y_hat-ds (ds/->dataset {(first inference-target-column-names) prediction})]
+        y_hat-ds
+        (->
+         (ds/->dataset { first-target-column-name prediction})
+         (ds/update-column first-target-column-name
+                           #(vary-meta % assoc :column-type :prediction)))]
+
+
       (ds/append-columns feature-ds (ds/columns y_hat-ds))))
   ([ds estimator]
    (predict ds estimator (ds-mod/inference-target-column-names ds))))
