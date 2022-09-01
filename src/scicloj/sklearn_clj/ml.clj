@@ -6,7 +6,9 @@
    [scicloj.metamorph.ml :as ml]
    [scicloj.sklearn-clj :as sklearn]
    [tech.v3.dataset :as ds]
-   [tech.v3.dataset.modelling :as ds-mod]))
+   [tech.v3.dataset.modelling :as ds-mod]
+   [tech.v3.dataset.categorical :as ds-cat]))
+
 
 (def filter-map
   {"classifier" "classification"
@@ -14,14 +16,16 @@
    
 (defn- make-train-fn [module-name estimator-class-name]
   (fn [feature-ds label-ds options]
-    (let [dataset (-> (ds/append-columns feature-ds label-ds)
-                      (ds-mod/set-inference-target (first (ds/column-names label-ds))))
+    (let [target-column (first (ds/column-names label-ds))
+          dataset (-> (ds/append-columns feature-ds label-ds)
+                      (ds-mod/set-inference-target target-column))
           estimator (sklearn/fit dataset
                                  (str "sklearn." module-name)
                                  estimator-class-name
 
                                  (dissoc options :model-type))]
       {:model estimator
+       :target-categorical-maps (get  (ds-mod/dataset->categorical-xforms dataset) target-column)
        :attributes (sklearn/model-attributes estimator)})))
 
                    
@@ -32,7 +36,12 @@
 
 (defn- predict
   [feature-ds thawed-model {:keys [target-columns target-categorical-maps options model-data] :as model}]
-  (sklearn/predict feature-ds thawed-model target-columns))
+  (let [prediction (sklearn/predict feature-ds thawed-model target-columns)]
+    (-> prediction
+        (ds/assoc-metadata target-columns :categorical-map (get target-categorical-maps (first target-columns))))))
+
+
+
 
 (defn make-names  [f]
   (let [class-name

@@ -64,15 +64,15 @@
 
 
 (defn make-estimator [module-kw estimator-class kw-args]
-  (let [
-        snakified-kw-args (snakify-keys kw-args)
-        module (csk/->snake_case_string module-kw)
-        class-name (if (keyword? estimator-class)
-                     (csk/->PascalCaseString estimator-class)
-                     estimator-class)
-        estimator-class-name (str module "." class-name)
-        constructor (path->py-obj estimator-class-name)]
-    (mapply cfn constructor snakified-kw-args)))
+   (let [
+         snakified-kw-args (snakify-keys kw-args)
+         module (csk/->snake_case_string module-kw)
+         class-name (if (keyword? estimator-class)
+                      (csk/->PascalCaseString estimator-class)
+                      estimator-class)
+         estimator-class-name (str module "." class-name)
+         constructor (path->py-obj estimator-class-name)]
+     (mapply cfn constructor snakified-kw-args)))
 
 (defn ndarray->ds [pyobject]
   (->  pyobject
@@ -84,6 +84,8 @@
   (-> ds
       dst/dataset->tensor
       py/->python))
+
+
 
 (defn raw-tf-result->ds [raw-result]
   (let [raw-type (python-type raw-result)
@@ -172,8 +174,6 @@
          (ds/->dataset { first-target-column-name prediction})
          (ds/update-column first-target-column-name
                            #(vary-meta % assoc :column-type :prediction)))]
-
-
       (ds/append-columns feature-ds (ds/columns y_hat-ds))))
   ([ds estimator]
    (predict ds estimator (ds-mod/inference-target-column-names ds))))
