@@ -2,14 +2,15 @@
   (:require
    [camel-snake-kebab.core :as csk]
    [clojure.string :as str]
-   [libpython-clj2.python :refer [->jvm as-jvm cfn path->py-obj py.- py.]]
+   [libpython-clj2.python :refer [->jvm as-jvm cfn path->py-obj py.- py.] :as py]
    [scicloj.metamorph.ml :as ml]
    [scicloj.sklearn-clj :as sklearn]
+   [tech.v3.datatype.functional :as dtf]
    [tech.v3.dataset :as ds]
    [tech.v3.dataset.modelling :as ds-mod]
    [tech.v3.dataset.categorical :as ds-cat]))
 
-
+(def pickle (py/import-module "pickle"))
 (def filter-map
   {"classifier" "classification"
    "regressor"  "regression"})
@@ -25,13 +26,15 @@
 
                                  (dissoc options :model-type))]
       {:model estimator
+       :pickled-model (-> (py. pickle dumps estimator)
+                       py/->jvm
+                       short-array)
        :target-categorical-maps (get  (ds-mod/dataset->categorical-xforms dataset) target-column)
        :attributes (sklearn/model-attributes estimator)})))
 
-                   
 
 
-  
+
 
 
 (defn- predict
@@ -53,9 +56,13 @@
     {:module-name module-name :class-name class-name}))
 
 
+(def builtins (py/import-module "builtins"))
+
 (defn- thaw-fn
   [model-data]
-  (:model model-data))
+  (py/py. pickle loads
+        (py/py. builtins bytes (:pickled-model model-data))))
+
 
 (defn define-estimators! [filter-s]
   (let [ estimators
