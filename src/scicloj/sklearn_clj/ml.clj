@@ -27,13 +27,10 @@
                                  (dissoc options :model-type))]
       {:model estimator
        :pickled-model (-> (py. pickle dumps estimator)
-                       py/->jvm
-                       short-array)
+                          py/->jvm
+                          short-array)
        :target-categorical-maps (get  (ds-mod/dataset->categorical-xforms dataset) target-column)
        :attributes (sklearn/model-attributes estimator)})))
-
-
-
 
 
 
