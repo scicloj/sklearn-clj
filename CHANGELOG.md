@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
-
+* unreleased
+  * fixed serialization of contexts containing sklearn-clj models
+  * allow reverse-mapping of categorical variables
 * 0.3.6
   * added model attributes to train results
 * 0.3.5
