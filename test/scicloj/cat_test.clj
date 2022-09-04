@@ -57,7 +57,7 @@
          (morph/fit-pipe ds pipe-fn)
          _ (nippy/freeze-to-file "/tmp/ctx.nippy" ctx)
          loaded-ctx (nippy/thaw-from-file "/tmp/ctx.nippy")]
-     (is (= {"setosa" 50, "versicolor" 51, "virginica" 49}
+     (is (= {"setosa" 50, "versicolor" 50, "virginica" 50}
             (->
              (morph/transform-pipe ds
                                    pipe-fn
