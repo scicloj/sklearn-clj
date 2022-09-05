@@ -48,24 +48,24 @@
 
          
     (is (=  {"versicolor" 5, "virginica" 4, "setosa" 1}
-            (frequencies predictions))))
+            (frequencies predictions)))))
 
 
 
- (deftest serialize-ctx
-   (let [ctx
-         (morph/fit-pipe ds pipe-fn)
-         _ (nippy/freeze-to-file "/tmp/ctx.nippy" ctx)
-         loaded-ctx (nippy/thaw-from-file "/tmp/ctx.nippy")]
-     (is (= {"setosa" 50, "versicolor" 50, "virginica" 50}
-            (->
-             (morph/transform-pipe ds
-                                   pipe-fn
-                                   loaded-ctx)
-             :metamorph/data
-             ds-cat/reverse-map-categorical-xforms
-             :species
-             frequencies))))))
+(deftest serialize-ctx
+  (let [ctx
+        (morph/fit-pipe ds pipe-fn)
+        _ (nippy/freeze-to-file "/tmp/ctx.nippy" ctx)
+        loaded-ctx (nippy/thaw-from-file "/tmp/ctx.nippy")]
+    (is (= {"setosa" 50, "versicolor" 50, "virginica" 50}
+           (->
+            (morph/transform-pipe ds
+                                  pipe-fn
+                                  loaded-ctx)
+            :metamorph/data
+            ds-cat/reverse-map-categorical-xforms
+            :species
+            frequencies)))))
 
 
 

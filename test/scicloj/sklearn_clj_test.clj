@@ -192,7 +192,7 @@
 
 
 
-(deftest model-svc
+(deftest model-svc-predict-proba
 
   (let [iris-split
         (->
@@ -203,21 +203,62 @@
         pipe-fn
         (mm/pipeline
          {:metamorph/id :svc}
-         (ml/model {:model-type :sklearn.classification/svc}))
+         (ml/model {:model-type :sklearn.classification/svc
+                    :predict-proba? true
+                    :probability true}))
+
+
 
         fitted-ctx
         (mm/fit-pipe
          (:train iris-split)
-         pipe-fn)]
+         pipe-fn)
+        prediction
+        (->
+         (mm/transform-pipe
+          (:test iris-split)
+          pipe-fn
+          fitted-ctx)
+         :metamorph/data)]
 
 
-    (is (=  {1.0 18, 0.0 15, 2.0 17}
+    (is (= [:species]) (ds/column-names prediction))
+    (is (=
+         [2.0 1.0 0.0]
+         (-> prediction :species frequencies keys)))))
 
-            (->
-             (mm/transform-pipe
-              (:test iris-split)
-              pipe-fn
-              fitted-ctx)
-             :metamorph/data
-             :species
-             frequencies)))))
+
+(deftest model-svc-no-proba
+
+  (let [iris-split
+        (->
+         (toydata/iris-ds)
+         (tc/split->seq :holdout {:seed 1234})
+         first)
+
+        pipe-fn
+        (mm/pipeline
+         {:metamorph/id :svc}
+         (ml/model {:model-type :sklearn.classification/svc
+                    :probability false
+                    :predict-proba? false}))
+        ;; :probability false
+
+
+        fitted-ctx
+        (mm/fit-pipe
+         (:train iris-split)
+         pipe-fn)
+        prediction
+        (->
+         (mm/transform-pipe
+          (:test iris-split)
+          pipe-fn
+          fitted-ctx)
+         :metamorph/data)]
+
+
+    (is (= [:species]) (ds/column-names prediction))
+    (is (=
+         [2.0 1.0 0.0]
+         (-> prediction :species frequencies keys)))))

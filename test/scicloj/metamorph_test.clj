@@ -31,7 +31,8 @@
          (sklearn-mm/estimate :sklearn.preprocessing :standard-scaler)
          {:metamorph/id :model}
          (mm-ml/model {:model-type :sklearn.classification/svc
-                       :gamma "auto"}))]
+                       :gamma "auto"
+                       :predict-proba? false}))]
 
 
     (is (= 1.0

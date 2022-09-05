@@ -20,23 +20,28 @@
     (let [target-column (first (ds/column-names label-ds))
           dataset (-> (ds/append-columns feature-ds label-ds)
                       (ds-mod/set-inference-target target-column))
+          model-options (dissoc options :model-type :predict-proba?)
           estimator (sklearn/fit dataset
                                  (str "sklearn." module-name)
                                  estimator-class-name
+                                 model-options)]
 
-                                 (dissoc options :model-type))]
       {:model estimator
+       :predict-proba? (get options :predict-proba? true)
        :pickled-model (-> (py. pickle dumps estimator)
                           py/->jvm
                           short-array)
-       :target-categorical-maps (get  (ds-mod/dataset->categorical-xforms dataset) target-column)
        :attributes (sklearn/model-attributes estimator)})))
 
 
 
 (defn- predict
-  [feature-ds thawed-model {:keys [target-columns target-categorical-maps options model-data] :as model}]
-  (let [prediction (sklearn/predict feature-ds thawed-model target-columns)]
+  [feature-ds thawed-model {:keys [target-columns target-categorical-maps predict-proba?] :as model}]
+  (let [prediction
+        (if (-> model :model-data :predict-proba?)
+          (sklearn/predict-proba feature-ds thawed-model target-columns)
+          (sklearn/predict feature-ds thawed-model target-columns))]
+
     (-> prediction
         (ds/assoc-metadata target-columns :categorical-map (get target-categorical-maps (first target-columns))))))
 

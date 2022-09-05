@@ -166,6 +166,7 @@
   ([ds estimator inference-target-column-names]
    (let
        [first-target-column-name (first inference-target-column-names)
+        _ (errors/when-not-error first-target-column-name "No inference target column name given")
         feature-ds (cf/feature ds)
         X  (ds->X feature-ds)
         prediction (py. estimator predict X)
@@ -174,11 +175,30 @@
          (ds/->dataset { first-target-column-name prediction})
          (ds/update-column first-target-column-name
                            #(vary-meta % assoc :column-type :prediction)))]
-      (ds/append-columns feature-ds (ds/columns y_hat-ds))))
+
+     y_hat-ds))
   ([ds estimator]
    (predict ds estimator (ds-mod/inference-target-column-names ds))))
 
+(defn predict-proba
+  "Calls `predict_proba` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
+  ([ds estimator inference-target-column-names]
+   (let
+       [_ (def ds ds)
+        first-target-column-name (first inference-target-column-names)
+        _ (errors/when-not-error first-target-column-name "No inference target column name given")
+        feature-ds (cf/feature ds)
+        X  (ds->X feature-ds)
+        prob-prediction (py. estimator predict_proba X)]
 
+     (->
+      (py. estimator predict_proba X)
+      dst/tensor->dataset
+      (ds-mod/probability-distributions->label-column first-target-column-name)
+      (ds/update-column first-target-column-name
+                        #(vary-meta % assoc :column-type :prediction)))))
+  ([ds estimator]
+   (predict-proba ds estimator (ds-mod/inference-target-column-names ds))))
 
 
 (defn transform
