@@ -50,7 +50,7 @@ See here https://github.com/clj-python/libpython-clj#usage for more information 
 ;; fit a liner expression model from sklearn, class sklearn.linear_model.LinearRegression
  
   (def lin-reg
-    (fit train-ds :linear-model :linear-regression ))
+    (fit train-ds :sklearn.linear-model :linear-regression ))
 
 ;; Call predict with new data on the estimator
   (predict test-ds lin-reg {})
@@ -66,7 +66,7 @@ See here https://github.com/clj-python/libpython-clj#usage for more information 
                  
 ;; fit the scaler on data                 
   (def scaler
-    (fit data :preprocessing :standard-scaler))
+    (fit data :sklearn.preprocessing :standard-scaler))
 
   (py.- scaler mean_)
   ;; => [0.5 0.5]
@@ -90,7 +90,7 @@ The library provides as well an adaptor to the scicloj [metamorph](https://githu
 ;; adding this as a pipeline operation somewhere in the pipeline
 ;; The estimate functon will do the right thing, depending on the :metamorph/mode   key being
 ;; :fit or :transform  , namely calling "fit" on :fit  and "predict" on :transform
-(sklearn-mm/estimate :linear-model :linear-regression {})
+(sklearn-mm/estimate :sklearn.linear-model :linear-regression {})
 ```
 
 
