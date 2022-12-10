@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file. This change
 * 0.4.0
   * fix result of predict to be a probability distribution
   * fixed serialization of contexts containing sklearn-clj models
-  * allow reverse-mapping of categorical variables
+  * allow reverse-mapping of categorical variables of prediction
 * 0.3.6
   * added model attributes to train results
 * 0.3.5
