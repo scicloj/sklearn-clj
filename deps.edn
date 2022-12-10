@@ -1,6 +1,6 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.11.1"}
-        clj-python/libpython-clj {:mvn/version "2.021"}
+        clj-python/libpython-clj {:mvn/version "2.020"}
         scicloj/metamorph.ml {:mvn/version "0.6.4"}}
 
 
