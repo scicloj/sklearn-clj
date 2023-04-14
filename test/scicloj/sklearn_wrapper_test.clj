@@ -120,12 +120,6 @@
           (py/py. reshape [150]))))
 
 
-
- 
-(py/py.- y shape)
-
-
-(first)
 (comment
   (py/from-import  yellowbrick.model_selection  CVScores)
 
