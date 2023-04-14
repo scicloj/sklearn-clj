@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
+* unreleses
+ * support single-case-capital params (#5)
+
 * 0.4.0
   * fix result of predict to be a probability distribution
   * fixed serialization of contexts containing sklearn-clj models
