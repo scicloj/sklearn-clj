@@ -5,11 +5,10 @@
    [libpython-clj2.python :refer [->jvm as-jvm cfn path->py-obj py.- py.] :as py]
    [scicloj.metamorph.ml :as ml]
    [scicloj.sklearn-clj :as sklearn]
-   [tech.v3.datatype.functional :as dtf]
    [tech.v3.dataset :as ds]
-   [tech.v3.dataset.modelling :as ds-mod]
-   [tech.v3.dataset.categorical :as ds-cat]))
+   [tech.v3.dataset.modelling :as ds-mod]))
 
+(py/initialize!)
 (def pickle (py/import-module "pickle"))
 (def filter-map
   {"classifier" "classification"
@@ -101,9 +100,6 @@
 
            
      names)))
-
-
-
 
 (define-estimators! "regressor")
 (define-estimators! "classifier")

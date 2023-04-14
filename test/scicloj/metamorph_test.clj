@@ -1,22 +1,20 @@
 (ns scicloj.metamorph-test
   (:require
-   [scicloj.sklearn-clj.ml]
-   [tech.v3.dataset.modelling :as ds-mod]
-   [tech.v3.dataset :as ds]
-   [tech.v3.dataset.tensor :as dst]
-   [tech.v3.tensor :as dtt]
-   [tablecloth.api :as tc]
-   [libpython-clj2.python :refer [->jvm py.- py.
-                                  python-type]]
-   [libpython-clj2.require :refer [require-python]]
-   [scicloj.sklearn-clj.metamorph :as sklearn-mm]
    [clojure.test :refer [deftest is]]
+   [libpython-clj2.python :refer [->jvm]
+    :as py]
+   [libpython-clj2.require :refer [require-python]]
+   [scicloj.metamorph.core :as morph]
    [scicloj.metamorph.ml :as mm-ml]
+   [scicloj.sklearn-clj.metamorph :as sklearn-mm]
+   [scicloj.sklearn-clj.ml]
+   [tablecloth.api :as tc]
+   [tech.v3.dataset :as ds]
    [tech.v3.dataset.column-filters :as ds-cf]
-   [scicloj.metamorph.core :as morph]))
+   [tech.v3.dataset.modelling :as ds-mod]))
    
 
-
+(py/initialize!)
 (deftest test-evaluate
   (let [XY (->
             (tc/dataset [ [-1, -1], [-2, -1], [1, 1], [2, 1]]

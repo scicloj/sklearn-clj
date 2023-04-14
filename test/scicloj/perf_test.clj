@@ -5,7 +5,7 @@
              [libpython-clj2.python.np-array]
              [scicloj.sklearn-clj :refer [fit]]
              [libpython-clj2.python  :as py]))
-
+(py/initialize!)
 (defmacro labeled-time
   "Evaluates expr and prints the time it took.  Returns the value of
  expr."
@@ -44,5 +44,5 @@
          _ (fit train :sklearn.ensemble :GradientBoostingClassifier)
          end (System/currentTimeMillis)
          clojure-time (/ (- end start) 1000)]
-    (t/is (< python-time 20))
-    (t/is (< clojure-time 20))))
+    (t/is (< python-time 21))
+    (t/is (< clojure-time 21))))

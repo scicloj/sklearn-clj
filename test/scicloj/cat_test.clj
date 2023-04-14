@@ -15,7 +15,7 @@
    [scicloj.sklearn-clj.ml]
    [clojure.test :refer [deftest is]]))
    
-
+(py/initialize!)
 (def builtins (py/import-module "builtins"))
 
 

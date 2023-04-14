@@ -1,18 +1,18 @@
 (ns scicloj.sklearn-clj
   (:require
    [camel-snake-kebab.core :as csk]
-   [libpython-clj2.require :refer [require-python]]
+   [clojure.string :as str]
+   clojure.walk
    [libpython-clj2.python
     :as py
-    :refer [as-jvm as-python cfn path->py-obj python-type py. py.-]]
+    :refer [cfn path->py-obj python-type py.]]
+   [libpython-clj2.python.np-array]
    [tech.v3.dataset :as ds]
    [tech.v3.dataset.column-filters :as cf]
    [tech.v3.dataset.modelling :as ds-mod]
    [tech.v3.dataset.tensor :as dst]
-   [tech.v3.datatype.errors :as errors]
-   [tech.v3.tensor :as t]
-   [tech.v3.datatype :as dt]
-   [libpython-clj2.python.np-array]))
+   tech.v3.datatype.casting
+   [tech.v3.datatype.errors :as errors]))
 
 
 (defn assert-numeric-ds [ds]
@@ -38,6 +38,7 @@
      (prn (str ~label  " - " "elapsed time: " (/ (double (- (. System (nanoTime)) start#)) 1000000.0) " msecs"))
      ret#))
 
+(py/initialize!)
 (println  "'sklearn' version found: "
           (get
            (py/module-dict (py/import-module "sklearn"))
@@ -186,13 +187,11 @@
   "Calls `predict_proba` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
   ([ds estimator inference-target-column-names]
    (let
-       [_ (def ds ds)
-        first-target-column-name (first inference-target-column-names)
+       [first-target-column-name (first inference-target-column-names)
         _ (errors/when-not-error first-target-column-name "No inference target column name given")
         feature-ds (cf/feature ds)
-        X  (ds->X feature-ds)
-        prob-prediction (py. estimator predict_proba X)]
-
+        X  (ds->X feature-ds)]
+        
      (->
       (py. estimator predict_proba X)
       dst/tensor->dataset
@@ -222,8 +221,8 @@
 (defn model-attribute-names [sklearn-model]
 
   (->> (py/dir sklearn-model)
-       (filter #(and  (clojure.string/ends-with? % "_")
-                      (not (clojure.string/starts-with? % "_"))))))
+       (filter #(and  (str/ends-with? % "_")
+                      (not (str/starts-with? % "_"))))))
 
 (defn save-py-get-attr [sklearn-model attr]
   ;; can fail in some cases
@@ -247,28 +246,9 @@
 
 
 (defn model-attributes [sklearn-model]
-  (def sklearn-model sklearn-model)
   (apply merge
          (map
           (fn [attr]
             (hash-map (keyword attr)
                       (save->jvm (save-py-get-attr sklearn-model attr))))
           (model-attribute-names sklearn-model))))
-
-(comment
-
-  (def big
-    (ds/->dataset
-     (apply merge
-            (map
-             #(hash-map % (seq (range 10000)))
-             (range 10000)))))
-
-  (println
-   (labeled-time
-     :numeric-ds<->ndarray-as
-    (->
-     big
-     numeric-ds->ndarray
-     ndarray->ds
-     (ds/shape)))))

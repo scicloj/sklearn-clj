@@ -25,11 +25,6 @@
                              (sklearn/transform data estimator kw-args))))))))
 
 
-
-                            
-                          
-
-
 (defn fit-transform
   ([module-kw estimator-class-kw]
    (fit-transform module-kw estimator-class-kw {}))

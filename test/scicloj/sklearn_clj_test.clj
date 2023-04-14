@@ -1,23 +1,21 @@
 (ns scicloj.sklearn-clj-test
-  (:require [clojure.test :refer :all]
-            [tech.v3.dataset :as ds]
-            [tech.v3.dataset.modelling :as ds-mod]
-            [tablecloth.api :as tc]
-            [tech.v3.dataset.tensor :as dst]
-            [tech.v3.tensor :as tensor]
-            [libpython-clj2.python :refer [python-type] :as py]
-            [tech.v3.datatype.functional :as f]
-            [scicloj.metamorph.ml.toydata :as toydata]
-            [scicloj.metamorph.ml :as ml]
-            [scicloj.metamorph.core :as mm]
-            [scicloj.sklearn-clj :refer :all]
-            [tablecloth.pipeline :as tcm]
-            [tech.v3.dataset.metamorph :as ds-mm]
-            [tech.v3.dataset.column-filters :as cf]
-            [scicloj.sklearn-clj.ml]))
+  (:require
+   [clojure.test :refer :all]
+   [libpython-clj2.python :refer [python-type] :as py]
+   [scicloj.metamorph.core :as mm]
+   [scicloj.metamorph.ml :as ml]
+   [scicloj.metamorph.ml.toydata :as toydata]
+   [scicloj.sklearn-clj :refer :all]
+   [scicloj.sklearn-clj.ml]
+   [tablecloth.api :as tc]
+   [tech.v3.dataset :as ds]
+   [tech.v3.dataset.modelling :as ds-mod]
+   [tech.v3.dataset.tensor :as dst]
+   [tech.v3.datatype.functional :as f]
+   [tech.v3.tensor :as tensor]))
 
             
-
+(py/initialize!)
 (def texts ["This is the first document."
                "This document is the second document."
                "And this is the third one."
