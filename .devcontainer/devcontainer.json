@@ -8,8 +8,8 @@
 
 	// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
 	"dockerFile": "./Dockerfile",
-
-	// Set *default* container specific settings.json values on container create.
+"runArgs": ["--publish","12345:12345"],
+// Set *default* container specific settings.json values on container create.
 	"settings": {},
 	
 	// Add the IDs of extensions you want installed when the container is created.

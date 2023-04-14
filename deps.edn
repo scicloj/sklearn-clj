@@ -9,6 +9,13 @@
          :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}
                       scicloj/scicloj.ml.smile {:mvn/version "7.0.642"}}}
 
+  :cider {:extra-deps {nrepl/nrepl {:mvn/version "1.0.0"}
+                       refactor-nrepl/refactor-nrepl {:mvn/version "3.6.0"}
+                       cider/cider-nrepl {:mvn/version "0.28.3"}}
+          :main-opts ["-m" "nrepl.cmdline"
+                      "-p" "12345"
+                      "-b" "0.0.0.0"
+                      "--middleware" "[refactor-nrepl.middleware/wrap-refactor cider.nrepl/cider-middleware]"]}
 
   :nREPL {:extra-deps {nrepl/nrepl {:mvn/version "0.8.3"}}}
 

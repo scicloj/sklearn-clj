@@ -9,7 +9,7 @@ RUN groupadd --gid 1000 user \
 # RUN Rscript -e 'install.packages("....",repo="http://cran.rstudio.com/")'
 
 
-RUN pip3 install pandas fs
+RUN pip3 install pandas fs yellowbrick
 
 USER user
 WORKDIR /home/user
