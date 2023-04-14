@@ -222,7 +222,7 @@
          :metamorph/data)]
 
 
-    (is (= [:species]) (ds/column-names prediction))
+    (is (= [0 1 2  :species] (ds/column-names prediction)))
     (is (=
          [2.0 1.0 0.0]
          (-> prediction :species frequencies keys)))))
@@ -258,7 +258,7 @@
          :metamorph/data)]
 
 
-    (is (= [:species]) (ds/column-names prediction))
+    (is (= [:species] (ds/column-names prediction)))
     (is (=
          [2.0 1.0 0.0]
          (-> prediction :species frequencies keys)))))
