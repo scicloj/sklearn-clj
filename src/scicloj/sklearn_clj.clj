@@ -121,7 +121,7 @@
 (defn prepare-python [ds module-kw estimator-class-kw kw-args]
   {:estimator (make-estimator module-kw estimator-class-kw kw-args)
    :inference-target (cf/target ds)
-   :X (-> ds cf/feature ds->X)
+   :X (-> ds cf/feature ds->X py/->py-list)
    :y (some-> ds
               cf/target
               numeric-ds->ndarray
@@ -139,6 +139,7 @@
    (fit ds module-kw estimator-class-kw {}))
   ([ds module-kw estimator-class-kw kw-args]
    (let [{:keys [estimator X y]} (prepare-python ds module-kw estimator-class-kw kw-args)]
+     
      (if y
        (py. estimator fit X y)
        (py. estimator fit X)))))
