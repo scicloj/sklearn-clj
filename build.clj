@@ -9,7 +9,9 @@
 (def version "0.4.0")
 
 (defn test "Run the tests." [opts]
-  (bb/run-tests opts))
+  (-> opts
+      (assoc :aliases [:runner])
+      (bb/run-tests)))
 
 (defn ci "Run the CI pipeline of tests (and build the JAR)." [opts]
   (-> opts
