@@ -30,7 +30,6 @@
              py/->jvm
              dst/tensor->dataset)
 
-
          y
          (-> res :globals
              (get "y_train")
@@ -41,8 +40,13 @@
              (tc/add-column :y y)
              (tech.v3.dataset.modelling/set-inference-target :y))
          start (System/currentTimeMillis)
-         _ (fit train :sklearn.ensemble :GradientBoostingClassifier)
+         _ (fit train :sklearn.ensemble :GradientBoostingClassifier
+                {:random-state 0
+                 :n-estimators 350
+                 :learning-rate 0.16})
          end (System/currentTimeMillis)
-         clojure-time (/ (- end start) 1000)]
-    (t/is (< python-time 21))
-    (t/is (< clojure-time 21))))
+         clojure-time (/ (- end start) 1000.0)]
+    (println :clojure-time clojure-time)
+    (println :python-time python-time)
+    (t/is (< python-time 30))
+    (t/is (< clojure-time 30))))
