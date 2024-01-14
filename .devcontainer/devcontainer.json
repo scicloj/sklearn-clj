@@ -8,15 +8,13 @@
 
 	// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
 	"dockerFile": "./Dockerfile",
-"runArgs": ["--publish","12345:12345"],
+"runArgs": ["--publish","1111:1111"],
 // Set *default* container specific settings.json values on container create.
-	"settings": {},
-	
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [
+	"customizations": {"vscode": {"extensions": [
 		"betterthantomorrow.calva",
 		"djblue.portal"
-	],
+
+	]}},
 
 	"postStartCommand": "clojure -P"
 	}
