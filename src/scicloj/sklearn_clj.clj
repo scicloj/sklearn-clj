@@ -60,8 +60,11 @@
   {:added "1.1"}
   [m]
   (let [f (fn [[k v]] (if (and  (keyword?  k)
-                               (>  (count (name k)) 1))
-                          [(csk/->snake_case_keyword k) v] [k v]))]
+                                (>  (count (name k)) 1))
+                        [(csk/->snake_case_keyword k :separator \-) v] 
+                        [(keyword k) v]
+                        
+                        ))]
     ;; only apply to maps
     (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 

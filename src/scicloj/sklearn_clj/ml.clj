@@ -14,7 +14,7 @@
   {"classifier" "classification"
    "regressor"  "regression"})
    
-(defn- make-train-fn [module-name estimator-class-name]
+(defn- make-train-fn [module-name estimator-class-name predict-proba?]
   (fn [feature-ds label-ds options]
     (let [target-column (first (ds/column-names label-ds))
           dataset (-> (ds/append-columns feature-ds label-ds)
@@ -26,7 +26,8 @@
                                  model-options)]
 
       {:model estimator
-       :predict-proba? (get options :predict-proba? true)
+       :predict-proba? (get options :predict-proba? predict-proba?)
+       
        :pickled-model (-> (py. pickle dumps estimator)
                           py/->jvm
                           short-array)
@@ -65,7 +66,7 @@
         (py/py. builtins bytes (:pickled-model model-data))))
 
 
-(defn define-estimators! [filter-s]
+(defn define-estimators! [filter-s predict-proba]
   (let [ estimators
         (->
          (cfn
@@ -88,7 +89,7 @@
              doc-string (py.- estimator __doc__)]
          (ml/define-model!
            (keyword  (str "sklearn." (filter-map filter-s)) (csk/->kebab-case-string class-name))
-           (make-train-fn module-name class-name)
+           (make-train-fn module-name class-name predict-proba)
            predict
            {:thaw-fn thaw-fn
             :documentation {:doc-string doc-string}
@@ -101,6 +102,6 @@
            
      names)))
 
-(define-estimators! "regressor")
-(define-estimators! "classifier")
+(define-estimators! "regressor" false)
+(define-estimators! "classifier" true)
 
