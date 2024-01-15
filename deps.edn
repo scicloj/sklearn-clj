@@ -1,13 +1,14 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.11.1"}
         clj-python/libpython-clj {:mvn/version "2.020"}
-        scicloj/metamorph.ml {:mvn/version "0.6.4"}}
+        scicloj/metamorph.ml {:mvn/version "0.7.2"}}
 
 
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}
-                      scicloj/scicloj.ml.smile {:mvn/version "7.0.642"}}}
+                      scicloj/scicloj.ml {:mvn/version "0.3"}
+                      scicloj/scicloj.ml.smile {:mvn/version "7.2"}}}
 
   :cider {:extra-deps {nrepl/nrepl {:mvn/version "1.0.0"}
                        refactor-nrepl/refactor-nrepl {:mvn/version "3.6.0"}
@@ -28,4 +29,8 @@
                 {:git/url "https://github.com/cognitect-labs/test-runner"
                  :sha "b6b3193fcc42659d7e46ecd1884a228993441182"}}
    :main-opts ["-m" "cognitect.test-runner"
-               "-d" "test"]}}}
+               "-d" "test"]}
+  :clerk
+ {:extra-deps { io.github.nextjournal/clerk {:mvn/version "0.13.842"}}}
+  :portal 
+  {:extra-deps {djblue/portal {:mvn/version "0.39.0"}}}}}
