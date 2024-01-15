@@ -40,7 +40,6 @@
                                                :metamorph/data
                                                :species
                                                vec)]
-                               (println :prediction prediction)
                                prediction)))
 
                           "fit"
