@@ -77,7 +77,8 @@
              (filter #(not (contains?
                             #{"MultiOutputRegressor" "RegressorChain" "StackingRegressor" "VotingRegressor"
                               "ClassifierChain" "MultiOutputClassifier" "OneVsOneClassifier" "OneVsRestClassifier"
-                              "OutputCodeClassifier" "StackingClassifier" "VotingClassifier"}
+                              "OutputCodeClassifier" "StackingClassifier" "VotingClassifier" "FixedThresholdClassifier"
+                              "TunedThresholdClassifierCV"}
                             (:class-name %)))))]
 
     (run!
