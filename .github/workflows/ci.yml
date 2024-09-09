@@ -15,7 +15,7 @@ jobs:
     - name: render tutorial in projects/noj
       uses: devcontainers/ci@v0.3
       with:    
-        runCmd: clj notebooks/render.clj
-        push: clj -T:build ci
+        runCmd: clj -T:build ci
+        push: never
 
 
