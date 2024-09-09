@@ -1,20 +1,27 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.202.5/containers/docker-existing-dockerfile
 {
-	"name": "Polyglot clojure",
-
-	// Sets the run context to one level up instead of the .devcontainer folder.
-	"context": "..",
-
-	// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
-	"dockerFile": "./Dockerfile",
-"runArgs": ["--publish","1111:1111"],
-// Set *default* container specific settings.json values on container create.
-	"customizations": {"vscode": {"extensions": [
-		"betterthantomorrow.calva",
-		"djblue.portal"
-
-	]}},
-
-	"postStartCommand": "clojure -P"
-	}
+  "remoteUser" : "vscode",
+  "updateContentCommand" : "clojure -P",
+  "forwardPorts" : [ "12345", "7777" ],
+  "name" : "dummy",
+  "build" : {
+    "dockerfile" : "Dockerfile"
+  },
+  "remoteEnv" : {
+    "PATH" : "${containerEnv:PATH}:/home/vscode/.asdf/shims"
+  },
+  "customizations" : {
+    "vscode" : {
+      "settings" : { },
+      "extensions" : [ "vscjava.vscode-java-pack", "borkdude.clj-kondo", "betterthantomorrow.calva" ]
+    }
+  },
+  "features" : {
+    "ghcr.io/devcontainers-contrib/features/clojure-asdf:2" : { },
+    "ghcr.io/devcontainers-contrib/features/bash-command:1" : {
+      "command" : "apt-get update && apt-get install -y rlwrap"
+    },
+    "ghcr.io/devcontainers/features/python:1" : { },
+    "ghcr.io/devcontainers-contrib/features/poetry:2" : { }
+  },
+  "postCreateCommand" : "sudo ln -fs /home/vscode/.asdf/shims/clojure /usr/local/bin/"
+}
