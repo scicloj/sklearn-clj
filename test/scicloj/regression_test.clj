@@ -50,6 +50,10 @@
             :sklearn.regression/isotonic-regression
             :sklearn.regression/multi-task-lasso
             :sklearn.regression/multi-task-elastic-net-cv
+            :sklearn.regression/extra-trees-regressor
+            :sklearn.regression/pls-canonical
+            :sklearn.regression/quantile-regressor
+            :sklearn.regression/cca
             })
          
          

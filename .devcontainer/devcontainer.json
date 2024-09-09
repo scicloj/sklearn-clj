@@ -12,7 +12,7 @@
   "customizations" : {
     "vscode" : {
       "settings" : { },
-      "extensions" : [ "vscjava.vscode-java-pack", "borkdude.clj-kondo", "betterthantomorrow.calva" ]
+      "extensions" : [ "betterthantomorrow.calva" ]
     }
   },
   "features" : {
@@ -23,5 +23,6 @@
     "ghcr.io/devcontainers/features/python:1" : { },
     "ghcr.io/devcontainers-contrib/features/poetry:2" : { }
   },
-  "postCreateCommand" : "sudo ln -fs /home/vscode/.asdf/shims/clojure /usr/local/bin/"
+  "postCreateCommand" : {"setupClojure": "sudo ln -fs /home/vscode/.asdf/shims/clojure /usr/local/bin/",
+                         "setupPython" : "poetry install"}
 }
