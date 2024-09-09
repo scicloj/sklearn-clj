@@ -1,0 +1,22 @@
+name: Build tutorials page
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: render tutorial in projects/noj
+      uses: devcontainers/ci@v0.3
+      with:    
+        subFolder: projects/noj
+        runCmd: clj notebooks/render.clj
+        push: clj -T:build ci
+
+
