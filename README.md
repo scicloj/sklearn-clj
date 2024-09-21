@@ -1,3 +1,4 @@
+![CI](https://github.com/scicloj/sklearn-clj/actions/workflows/ci.yml/badge.svg)
 [![Clojars Project](https://img.shields.io/clojars/v/scicloj/sklearn-clj.svg)](https://clojars.org/scicloj/sklearn-clj)
 
 # sklearn-clj
