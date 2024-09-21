@@ -1,11 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-* unreleased
+* 0.4.1
   * support single-case-capital params (#5)
   * fixes #8 regressors use predict_prob by default, which is not defined or most/all regressors
   * fixes #9 certain options cannot be passed to models
   * fixes #10 FixedThresholdClassifier and TunedThresholdClassifierCV 
+    -> compatibilty wit latest sklearn
 
 * 0.4.0
   * fix result of predict to be a probability distribution
