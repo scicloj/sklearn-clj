@@ -11,6 +11,7 @@ It uses a tech.ml.dataset for input and output and converts this data structures
 
 As all estimators and models in sklearn uses the same interface,  it works for all estimators.
 
+A opinionated tutorial is [here](https://scicloj.github.io/clojure-data-tutorials/projects/ml/sklearn-clj/)
 
 ## Usage
 
