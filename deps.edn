@@ -9,7 +9,7 @@
           :ns-default build}
  :test {:extra-paths ["test"]
        :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}
-                    scicloj/scicloj.ml.smile {:mvn/version "7.4.1"}}}
+                    org.scicloj/scicloj.ml.smile {:mvn/version "7.4.3"}}}
   
   :runner
   {:extra-deps {com.cognitect/test-runner

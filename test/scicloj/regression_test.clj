@@ -41,10 +41,10 @@
            (-> eval-result first first :test-transform :mean)))))
 
 
-(deftest exercise-regressors 
-  (let [ validation-results
+(deftest exercise-regressors
+  (let [validation-results
         (->>
-         (set/difference 
+         (set/difference
           (into #{} (keys @ml/model-definitions*))
           #{:sklearn.regression/multi-task-elastic-net
             :sklearn.regression/multi-task-lasso-cv
@@ -55,20 +55,16 @@
             :sklearn.regression/extra-trees-regressor
             :sklearn.regression/pls-canonical
             :sklearn.regression/quantile-regressor
-            :sklearn.regression/cca
-            })
-         
-         
+            :sklearn.regression/cca})
+
+
          (filter #(some? %))
          (filter #(some? (namespace %)))
          (filter #(str/starts-with? (namespace %) "sklearn.regression"))
-         (mapv validate-regressor-mean)
-         )]
-    (is (every? 
+         (mapv validate-regressor-mean))]
+    (is (every?
          true?
-         validation-results
-               )))
-  )
+         validation-results))))
 
 
 

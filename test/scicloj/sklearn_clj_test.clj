@@ -264,3 +264,4 @@
 
 (deftest C-param-does-work
   (make-estimator "sklearn.svm" "SVR" {:C 1.0 :cache-size 200}))
+
