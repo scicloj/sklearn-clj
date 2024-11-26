@@ -1,7 +1,7 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.12.0"}
         clj-python/libpython-clj {:mvn/version "2.025"}
-        scicloj/metamorph.ml {:mvn/version "0.8.2"}}
+        org.scicloj/metamorph.ml {:mvn/version "0.10.4"}}
  :aliases 
  {
   :build {:extra-deps {io.github.seancorfield/build-clj
