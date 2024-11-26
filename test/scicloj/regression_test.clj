@@ -4,9 +4,11 @@
             [clojure.string :as str]
             [clojure.test :refer [deftest is]]
             [scicloj.metamorph.ml.toydata :as toydata]
-            [scicloj.ml.core :as ml]
-            [scicloj.ml.dataset :as ds]
-            [scicloj.ml.metamorph :as mm]
+            [scicloj.metamorph.ml :as ml]
+            [scicloj.metamorph.ml.loss :as loss]
+            [tech.v3.dataset :as ds]
+            [scicloj.metamorph.core :as mm]
+            [tablecloth.api :as tc]
             [scicloj.sklearn-clj :as sklearn]
             [scicloj.sklearn-clj.ml])) 
 
@@ -26,13 +28,13 @@
   (println model-type)
   (let [  diabetes (toydata/diabetes-ds)
         pipe-fn
-        (ml/pipeline
+        (mm/pipeline
          {:metamorph/id :model}
-         (mm/model {:model-type model-type}))
+         (ml/model {:model-type model-type}))
         eval-result
         (ml/evaluate-pipelines [pipe-fn]
-                               (ds/split->seq diabetes)
-                               ml/rmse
+                               (tc/split->seq diabetes)
+                               loss/rmse
                                :loss)
         ]
     (is (< 50
@@ -43,7 +45,7 @@
   (let [ validation-results
         (->>
          (set/difference 
-          (into #{} (keys @scicloj.ml.core/model-definitions*))
+          (into #{} (keys @ml/model-definitions*))
           #{:sklearn.regression/multi-task-elastic-net
             :sklearn.regression/multi-task-lasso-cv
             :sklearn.regression/random-forest-regressor

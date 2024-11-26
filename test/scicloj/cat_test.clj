@@ -66,32 +66,3 @@
             ds-cat/reverse-map-categorical-xforms
             :species
             frequencies)))))
-
-
-
-
-
-
-
-
-
-
-
-(comment
-
-
-  (-> (ds/->dataset  {:x [:a :b]})
-      (ds/categorical->number  cf/categorical [[:a 1 :b 2]])
-      (-> :x meta :categorical-map :lookup-table))
-
-
-
-
-  (-> (ds/->dataset  {:x [:a :b]})
-      (ds/categorical->number  cf/categorical [[:a 3.1 ] [:b 3.2]] :int16)
-      (ds-cat/reverse-map-categorical-xforms))
-
-
-  (-> (ds/->dataset  {:x [:a :b]})
-      (ds/categorical->number  cf/categorical [[:b 3.1 ] [:a 7.1]])
-      (ds-cat/reverse-map-categorical-xforms)))

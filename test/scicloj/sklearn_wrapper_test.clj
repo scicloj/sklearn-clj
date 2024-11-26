@@ -78,9 +78,6 @@
          X-column-names y-column-names
          X-categorical-maps y-categorical-maps)
 
-        _ (def X X)
-        _ (def y y)
-        _ (def estimator estimator)
         lc
         (fit-lc estimator X y)]
 
@@ -93,52 +90,3 @@
 
 
 
-(comment
-
-  (defn fit-and-show-lc! [estimator X y]
-    (let [lc (LearningCurve estimator
-                            ;; :cv 5
-                            ;; :scoring "f1_micro"
-                            :train_sizes [30 40 50 60 70 80 90 100 110 120])
-
-
-          _ (py/py. lc fit X y)]
-     (py/py. lc show)
-
-     lc)))
-
-(comment
-  (def
-    X (-> data
-          (cf/feature)
-          (scicloj.sklearn-clj/ds->X)))
-
-  (def
-    y (-> data
-          (cf/target)
-          (scicloj.sklearn-clj/ds->X)
-          (py/py. reshape [150]))))
-
-
-(comment
-  (py/from-import  yellowbrick.model_selection  CVScores)
-
-
-  (def vis (CVScores estimator :cv 20))
-  (py/py. vis fit X y)
-  (py/py. vis show)
-
-
-  (comment
-    (py/from-import  yellowbrick.target FeatureCorrelation)
-
-    (def vis (FeatureCorrelation :labels (-> data cf/feature tc/column-names vec)))
-    (py/py. vis fit X y)
-    (py/py. vis show)
-
-
-
-    :ok)
-
-
-  :ok)
