@@ -1,4 +1,5 @@
-[![Clojars Project](https://img.shields.io/clojars/v/scicloj/sklearn-clj.svg)](https://clojars.org/scicloj/sklearn-clj)
+![CI](https://github.com/scicloj/sklearn-clj/actions/workflows/ci.yml/badge.svg)
+[![Clojars Project](https://img.shields.io/clojars/v/org.scicloj/sklearn-clj.svg)](https://clojars.org/org.scicloj/sklearn-clj)
 
 # sklearn-clj
 
@@ -10,6 +11,7 @@ It uses a tech.ml.dataset for input and output and converts this data structures
 
 As all estimators and models in sklearn uses the same interface,  it works for all estimators.
 
+A opinionated tutorial is [here](https://scicloj.github.io/clojure-data-tutorials/projects/ml/sklearn-clj/)
 
 ## Usage
 
