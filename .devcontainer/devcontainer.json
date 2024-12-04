@@ -1,8 +1,6 @@
 {
   "remoteUser" : "vscode",
-  "updateContentCommand" : "clojure -P -Sthreads 1",
-  "forwardPorts" : [ "12345", "7777" ],
-  "name" : "dummy",
+  "name" : "sklearn clj",
   "build" : {
     "dockerfile" : "Dockerfile"
   },
@@ -24,5 +22,8 @@
     "ghcr.io/devcontainers-contrib/features/poetry:2" : { }
   },
   "postCreateCommand" : {"setupClojure": "sudo ln -fs /home/vscode/.asdf/shims/clojure /usr/local/bin/",
-                         "setupPython" : "mkdir -p .venv && poetry install"}
+                         "setupPython" : "mkdir -p .venv && poetry install"},
+  "postStartCommand": "clojure -Atest -Sthreads 1 -P"                          
+
+
 }
