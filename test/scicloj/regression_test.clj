@@ -6,7 +6,6 @@
             [scicloj.metamorph.ml.toydata :as toydata]
             [scicloj.metamorph.ml :as ml]
             [scicloj.metamorph.ml.loss :as loss]
-            [tech.v3.dataset :as ds]
             [scicloj.metamorph.core :as mm]
             [tablecloth.api :as tc]
             [scicloj.sklearn-clj :as sklearn]

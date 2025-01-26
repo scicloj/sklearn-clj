@@ -6,6 +6,7 @@
    [libpython-clj2.require :refer [require-python]]
    [scicloj.metamorph.core :as morph]
    [scicloj.metamorph.ml :as mm-ml]
+   [scicloj.metamorph.ml.malli]
    [scicloj.sklearn-clj.metamorph :as sklearn-mm]
    [scicloj.sklearn-clj.ml]
    [tablecloth.api :as tc]
@@ -137,8 +138,12 @@
 
     (is (= [1.0] (get-in result [:metamorph/data :target])))))
            
-        
 
+(deftest has-valid-options 
+  (scicloj.metamorph.ml.malli/model-options->full-schema
+   (-> @ml/model-definitions* :sklearn.classification/sgd-classifier :options))
+  (is (= [:n-iter-no-change {:optional true} :any]
+         (-> @ml/model-definitions* :sklearn.classification/sgd-classifier :options first))))
 
 (comment
   (require-python '[numpy :as np]

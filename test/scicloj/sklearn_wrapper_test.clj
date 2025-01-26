@@ -33,7 +33,6 @@
         ;; (tc/select-columns [:sepal_length :sepal_wi:species])
 
 
-        _ (def data data)
         pipe-fn
         (mm/pipeline
          (ds-mm/set-inference-target :species)
@@ -72,25 +71,16 @@
             first)
 
 
-        _ (def pipe-fn pipe-fn)
-        _ (def X-column-names X-column-names)
-        _ (def y-column-names y-column-names)
-        _ (def X-categorical-maps X-categorical-maps )
-        _ (def y-categorical-maps y-categorical-maps)
         estimator
         (scicloj.sklearn-clj.sklearn-wrapper/pipe-fn->estimator
          "my" pipe-fn
          X-column-names y-column-names
          X-categorical-maps y-categorical-maps)
 
-        _ (def estimator estimator)
-        _ (def X X)
-        _ (def y y)
         lc
         (fit-lc estimator X y)]
 
 
-    (def lc lc)
     (t/is (= [60 70 80 90 100 110 120]
              (->
               (py/py.- lc train_sizes_)

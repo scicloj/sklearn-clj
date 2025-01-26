@@ -95,12 +95,17 @@
            {:thaw-fn thaw-fn
             :documentation {:doc-string doc-string}
             :options
-            (map (fn [[k v]]
-                   {:name (csk/->kebab-case-keyword k)
-                    :default v})
-                 params)})))
+            (vec
+             (concat
+              (mapv (fn [[k v]]
 
-           
+                      (vector
+                       (csk/->kebab-case-keyword k)
+                       {:optional true}
+                       :any))
+                    params)
+              [[:predict-proba? {:optional true} boolean?]]))})))
+
      names)))
 
 (define-estimators! "regressor" false)

@@ -7,7 +7,7 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.9"
-scikit-learn = "1.5.2"
+scikit-learn = "1.6.1"
 yellowbrick = "1.5"
 pandas = "2.2.3"
 

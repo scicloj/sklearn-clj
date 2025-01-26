@@ -34,7 +34,6 @@
         pipe-fn-seq [pipe-fn]
         evaluations (ml/evaluate-pipelines pipe-fn-seq train-split-seq loss/classification-loss :loss)
         best-fitted-context (-> evaluations first first :fit-ctx)
-        _ (def best-fitted-context best-fitted-context)
         best-pipe-fn (-> evaluations first first :pipe-fn)
         new-ds (ds/sample ds 10 {:seed 1234})
         predictions

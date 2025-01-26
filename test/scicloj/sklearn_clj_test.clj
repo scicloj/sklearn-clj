@@ -263,5 +263,21 @@
   
 
 (deftest C-param-does-work
-  (make-estimator "sklearn.svm" "SVR" {:C 1.0 :cache-size 200}))
+
+  (is (= {"kernel" "rbf",
+          "gamma" "scale",
+          "degree" 3,
+          "tol" 0.001,
+          "shrinking" true,
+          "C" 1.0,
+          "max_iter" -1,
+          "coef0" 0.0,
+          "cache_size" 200,
+          "verbose" false,
+          "epsilon" 0.1}
+         (->
+          (py/py.
+           (make-estimator "sklearn.svm" "SVR" {:C 1.0 :cache-size 200})
+           get_params)
+          py/->jvm))))
 

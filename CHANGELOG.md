@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+* unreleased
+ * use latest metamorph.ml
+ * options in malli format
+
 * 0.4.1
   * support single-case-capital params (#5)
   * fixes #8 regressors use predict_prob by default, which is not defined or most/all regressors
