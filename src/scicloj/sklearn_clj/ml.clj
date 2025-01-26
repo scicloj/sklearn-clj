@@ -97,8 +97,8 @@
             :options
             (vec
              (concat
+              [:map {:closed true}]
               (mapv (fn [[k v]]
-
                       (vector
                        (csk/->kebab-case-keyword k)
                        {:optional true}

@@ -3,7 +3,7 @@
         clj-python/libpython-clj {:mvn/version "2.026"}
         org.scicloj/metamorph.ml 
         {:git/url "https://github.com/scicloj/metamorph.ml"
-         :git/sha "16ef7334ea79a0d829013b371480a67fb7f28d96"}
+         :git/sha "53edc16395a98bacb31af7dd61e1b5c1736b92dd"}
         ;;{:mvn/version "0.12"}
         }
  :aliases 
@@ -16,7 +16,7 @@
                       
                       org.scicloj/scicloj.ml.smile 
                       {:git/url "https://github.com/scicloj/scicloj.ml.smile"
-                       :git/sha "765a2f43a55e91fe7e38fa3cdc93b45282f99006"}
+                       :git/sha "e10badbe7dbbda8d3b9960753ab2a3b17d52e003"}
                     ;{:mvn/version "7.4.3"}
                       
                       }}
