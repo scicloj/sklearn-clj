@@ -1,10 +1,7 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.12.0"}
         clj-python/libpython-clj {:mvn/version "2.026"}
-        org.scicloj/metamorph.ml 
-        {:git/url "https://github.com/scicloj/metamorph.ml"
-         :git/sha "53edc16395a98bacb31af7dd61e1b5c1736b92dd"}
-        ;;{:mvn/version "0.12"}
+        org.scicloj/metamorph.ml {:mvn/version "1.0"}
         }
  :aliases 
  {
@@ -13,13 +10,8 @@
           :ns-default build}
   :test {:extra-paths ["test"]
          :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}
-                      
-                      org.scicloj/scicloj.ml.smile 
-                      {:git/url "https://github.com/scicloj/scicloj.ml.smile"
-                       :git/sha "e10badbe7dbbda8d3b9960753ab2a3b17d52e003"}
-                    ;{:mvn/version "7.4.3"}
-                      
-                      }}
+
+                      org.scicloj/scicloj.ml.smile {:mvn/version "7.5.0"}}}
   
   :runner {:main-opts ["-m" "kaocha.runner"]
            :extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}}}
@@ -28,4 +20,4 @@
            :exec-fn deps-deploy.deps-deploy/deploy
            :exec-args {:installer :remote
                        :sign-releases? false
-                       :artifact "target/sklearn-clj-0.4.1.jar"}}}}
+                       :artifact "target/sklearn-clj-0.5.jar"}}}}

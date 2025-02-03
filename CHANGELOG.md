@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-* unreleased
+* 0.5
  * use latest metamorph.ml
  * options in malli format
 
