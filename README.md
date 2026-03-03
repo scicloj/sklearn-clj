@@ -25,8 +25,6 @@ See here https://github.com/clj-python/libpython-clj#usage for more information 
 
 
 ```clojure
-
- 
   (require
    '[libpython-clj2.python :refer [py.-]]
    '[tech.v3.dataset :as ds]
@@ -55,12 +53,14 @@ See here https://github.com/clj-python/libpython-clj#usage for more information 
     (fit train-ds :sklearn.linear-model :linear-regression ))
 
 ;; Call predict with new data on the estimator
-  (predict test-ds lin-reg {})
-  ;; => _unnamed [1 3]:
-  ;;    | :x1 | :x2 |   :y |
-  ;;    |-----|-----|------|
-  ;;    |   3 |   5 | 16.0 |
-
+  (predict test-ds lin-reg [:y])
+  ;;=> _unnamed [1 1]:
+  ;;   
+  ;;   |   :y |
+  ;;   |-----:|
+  ;;   | 16.0 |
+  ;;   
+  
 ;; use an other estimator, this time: sklearn.preprocessing.StandardScaler
   (def data
     (ds/->dataset {:x1 [0 0 1 1]
@@ -77,7 +77,7 @@ See here https://github.com/clj-python/libpython-clj#usage for more information 
 ;; apply the scaling on new data  
   (transform (ds/->dataset {:x1 [2] :x2 [2]})  scaler)
   ;; => :_unnamed [1 2]:
-  ;;    | :x1 | :x2 |
+  ;;    | 0   | 1   |
   ;;    |-----|-----|
   ;;    | 3.0 | 3.0 |
 
@@ -100,25 +100,26 @@ Alternatively the models can be integrated in tech.ml / [scicloj.ml](https://git
 
 ``` clojure
 (require '[scicloj.sklearn-clj.ml]) ;; registers all models
-(require '[scicloj.ml.core :as ml]
-         '[scicloj.ml.metamorph :as mm]
-         '[scicloj.ml.dataset :as ds]
+(require '[scicloj.metamorph.core :as morph]
+         '[tech.v3.dataset :as ds]
+         '[tech.v3.dataset.metamorph :as mm]
+         '[scicloj.metamorph.ml :as ml]
          '[libpython-clj2.python :refer [py. py.-]])
 
 (def iris
   (->
-   (ds/dataset
+   (ds/->dataset
     "https://raw.githubusercontent.com/scicloj/metamorph.ml/main/test/data/iris.csv" {:key-fn keyword})))
 
 
 (def pipe-fn   
- (ml/pipeline
+ (morph/pipeline
   (mm/set-inference-target :species)
   (mm/categorical->number [:species])
   {:metamorph/id :model}
-  (mm/model {:model-type :sklearn.classification/logistic-regression})))
+  (ml/model {:model-type :sklearn.classification/logistic-regression})))
 
-(def trained-ctx (ml/fit-pipe iris pipe-fn))
+(def trained-ctx (morph/fit-pipe iris pipe-fn))
 
 (def model-object
   (-> trained-ctx :model :model-data :model))
