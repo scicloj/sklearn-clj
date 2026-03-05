@@ -37,8 +37,12 @@
 
 (defn- predict
   [feature-ds thawed-model {:keys [target-columns target-categorical-maps predict-proba?] :as model}]
+
   (let [prediction
-        (if (-> model :model-data :predict-proba?)
+        (if
+         (and
+          (-> model :model-data :predict-proba?)
+          (py/has-attr? thawed-model "predict_proba"))
           (sklearn/predict-proba feature-ds thawed-model target-columns)
           (sklearn/predict feature-ds thawed-model target-columns))]
 
@@ -48,7 +52,7 @@
 
 
 
-(defn make-names  [f]
+(defn- make-names  [f]
   (let [class-name
         (py.- (second  f) __name__)
         module-name
@@ -66,7 +70,7 @@
         (py/py. builtins bytes (:pickled-model model-data))))
 
 
-(defn define-estimators! [filter-s predict-proba]
+(defn- define-estimators! [filter-s predict-proba]
   (let [ estimators
         (->
          (cfn

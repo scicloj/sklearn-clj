@@ -15,17 +15,13 @@
    [tech.v3.datatype.errors :as errors]))
 
 
-(defn assert-numeric-ds [ds]
+(defn- assert-numeric-ds [ds]
   (errors/when-not-error
    (every? true?
            (map
             #(-> % meta :datatype tech.v3.datatype.casting/numeric-type?)
             (ds/columns ds)))
    "All values of target columns need to be numeric."))
-
-
-
-
 
 
 (defmacro labeled-time
@@ -53,9 +49,9 @@
 
 
 
-(defn mapply [f & args] (apply f (apply concat (butlast args) (last args))))
+(defn- mapply [f & args] (apply f (apply concat (butlast args) (last args))))
 
-(defn snakify-keys
+(defn- snakify-keys
   "Recursively transforms all map keys from to snake case."
   {:added "1.1"}
   [m]
@@ -85,7 +81,7 @@
        py/->jvm
        dst/tensor->dataset))
 
-(defn numeric-ds->ndarray [ds]
+(defn- numeric-ds->ndarray [ds]
   (assert-numeric-ds ds)
   (-> ds
       dst/dataset->tensor
@@ -93,7 +89,7 @@
 
 
 
-(defn raw-tf-result->ds [raw-result]
+(defn- raw-tf-result->ds [raw-result]
   (let [raw-type (python-type raw-result)
         result (case raw-type
                  :csr-matrix (py. raw-result toarray)
@@ -121,7 +117,7 @@
     X))
 
 
-(defn prepare-python [ds module-kw estimator-class-kw kw-args]
+(defn- prepare-python [ds module-kw estimator-class-kw kw-args]
   {:estimator (make-estimator module-kw estimator-class-kw kw-args)
    :inference-target (cf/target ds)
    :X (-> ds cf/feature ds->X py/->py-list)
@@ -234,7 +230,7 @@
        (catch Exception e nil)))
 
 
-(defn is-object-ndarray? [pyob]
+(defn- is-object-ndarray? [pyob]
   (and  (= (python-type pyob) :ndarray)
         (= (->
             pyob
@@ -242,7 +238,7 @@
             (py/py.- name))
            "object")))
 
-(defn save->jvm [pyob]
+(defn- save->jvm [pyob]
   (if is-object-ndarray?
     (py/as-jvm pyob)
     (py/->jvm pyob)))

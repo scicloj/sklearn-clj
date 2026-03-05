@@ -13,7 +13,7 @@
 (py/from-import sklearn.base ClassifierMixin)
 
 
-(defn set-column-names [ds column-name-list]
+(defn- set-column-names [ds column-name-list]
   (-> ds
       (tc/rename-columns (zipmap (tc/column-names ds)
                                  column-name-list))))

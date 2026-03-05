@@ -1,4 +1,4 @@
-(ns scicloj.iris-test 
+(ns scicloj.iris-test
   (:require
    [clojure.test :refer [deftest is]]
    [scicloj.metamorph.core :as mm]
@@ -7,7 +7,7 @@
    [tech.v3.dataset :as ds]
    [tech.v3.dataset.metamorph :as ds-mm]
    [tablecloth.api :as tc]
-   [scicloj.sklearn-clj.ml])) 
+   [scicloj.sklearn-clj.ml]))
 
 
 
@@ -15,6 +15,7 @@
   (->
    (ds/->dataset
     "https://raw.githubusercontent.com/scicloj/metamorph.ml/main/test/data/iris.csv" {:key-fn keyword})))
+
 
 
 (def pipe-fn

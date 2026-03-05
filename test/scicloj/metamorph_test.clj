@@ -1,9 +1,7 @@
 (ns scicloj.metamorph-test
   (:require
    [clojure.test :refer [deftest is]]
-   [libpython-clj2.python :refer [->jvm]
-    :as py]
-   [libpython-clj2.require :refer [require-python]]
+   [libpython-clj2.python :as py]
    [scicloj.metamorph.core :as morph]
    [scicloj.metamorph.ml :as mm-ml]
    [scicloj.metamorph.ml :as ml]
@@ -15,7 +13,6 @@
    [tech.v3.dataset.column-filters :as ds-cf]
    [tech.v3.dataset.modelling :as ds-mod]))
    
-
 (py/initialize!)
 (deftest test-evaluate
   (let [XY (->
