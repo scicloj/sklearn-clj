@@ -14,12 +14,13 @@
     }
   },
   "features" : {
-    "ghcr.io/devcontainers-contrib/features/clojure-asdf:2" : { },
-    "ghcr.io/devcontainers-contrib/features/bash-command:1" : {
+    "ghcr.io/devcontainers-extra/features/clojure-asdf:2" : { },
+    "ghcr.io/devcontainers-extra/features/bash-command:1" : {
       "command" : "apt-get update && apt-get install -y rlwrap"
     },
-    "ghcr.io/devcontainers/features/python:1" : { },
-    "ghcr.io/devcontainers-contrib/features/poetry:2" : { }
+    "ghcr.io/devcontainers/features/python:1" : {},
+    "ghcr.io/devcontainers-extra/features/poetry:2": {},
+    "ghcr.io/devcontainer-community/devcontainer-features/astral.sh-uv:1": {}
   },
   "postCreateCommand" : {"setupClojure": "sudo ln -fs /home/vscode/.asdf/shims/clojure /usr/local/bin/",
                          "setupPython" : "mkdir -p .venv && poetry install"},
