@@ -10,7 +10,10 @@
   "customizations" : {
     "vscode" : {
       "settings" : { },
-      "extensions" : [ "betterthantomorrow.calva" ]
+      "extensions" : [
+        "betterthantomorrow.calva",
+        "betterthantomorrow.calva-power-tools"
+      ]
     }
   },
   "features" : {
