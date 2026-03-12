@@ -21,12 +21,12 @@
     "ghcr.io/devcontainers-extra/features/bash-command:1" : {
       "command" : "apt-get update && apt-get install -y rlwrap"
     },
-    "ghcr.io/devcontainers/features/python:1" : {},
+    "ghcr.io/devcontainers/features/python:1" : {"version": "3.12"},
     "ghcr.io/devcontainers-extra/features/poetry:2": {},
     "ghcr.io/devcontainer-community/devcontainer-features/astral.sh-uv:1": {}
   },
   "postCreateCommand" : {"setupClojure": "sudo ln -fs /home/vscode/.asdf/shims/clojure /usr/local/bin/",
-                         "setupPython" : "mkdir -p .venv && poetry install"},
+                         "setupPython" : "uv venv --clear --python 3.12 --managed-python && uv sync"},
   "postStartCommand": "clojure -Atest -Sthreads 1 -P"                          
 
 
