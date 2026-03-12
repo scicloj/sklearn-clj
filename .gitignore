@@ -19,3 +19,4 @@
 .clerk
 .vscode
 poetry.lock
+uv.lock

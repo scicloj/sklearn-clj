@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. This change
 * unreleased
   * fix classifiers, which do not have "predict_proba" attribute
   * made some internal fns private
+  * use 'uv' for python
+  * tested with sklearn 1.8.0
 
 * 0.5
   * use latest metamorph.ml

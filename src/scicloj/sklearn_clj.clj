@@ -34,6 +34,7 @@
      (prn (str ~label  " - " "elapsed time: " (/ (double (- (. System (nanoTime)) start#)) 1000000.0) " msecs"))
      ret#))
 
+
 (py/initialize!)
 (println  "'sklearn' version found: "
           (get
@@ -57,24 +58,21 @@
   [m]
   (let [f (fn [[k v]] (if (and  (keyword?  k)
                                 (>  (count (name k)) 1))
-                        [(csk/->snake_case_keyword k :separator \-) v] 
-                        [(keyword k) v]
-                        
-                        ))]
+                        [(csk/->snake_case_keyword k :separator \-) v]
+                        [(keyword k) v]))]
     ;; only apply to maps
     (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
 
 (defn make-estimator [module-kw estimator-class kw-args]
-   (let [
-         snakified-kw-args (snakify-keys kw-args)
-         module (csk/->snake_case_string module-kw)
-         class-name (if (keyword? estimator-class)
-                      (csk/->PascalCaseString estimator-class)
-                      estimator-class)
-         estimator-class-name (str module "." class-name)
-         constructor (path->py-obj estimator-class-name)]
-     (mapply cfn constructor snakified-kw-args)))
+  (let [snakified-kw-args (snakify-keys kw-args)
+        module (csk/->snake_case_string module-kw)
+        class-name (if (keyword? estimator-class)
+                     (csk/->PascalCaseString estimator-class)
+                     estimator-class)
+        estimator-class-name (str module "." class-name)
+        constructor (path->py-obj estimator-class-name)]
+    (mapply cfn constructor snakified-kw-args)))
 
 (defn ndarray->ds [pyobject]
   (->  pyobject
@@ -95,16 +93,15 @@
                  :csr-matrix (py. raw-result toarray)
                  :ndarray raw-result)
         new-ds (ndarray->ds result)]
-        
+
     new-ds))
 
 
 (defn ds->X [ds]
-  (let [
-        string-ds (cf/of-datatype ds :string)
+  (let [string-ds (cf/of-datatype ds :string)
         numeric-ds (cf/numeric ds)
         _ (when-error  (and (some? string-ds) (some? numeric-ds))
-            "Dataset contains numeric and non-numeric features, which is not supported.")
+                       "Dataset contains numeric and non-numeric features, which is not supported.")
 
         X (if (nil? string-ds)
             (numeric-ds->ndarray numeric-ds)
@@ -112,7 +109,7 @@
             (do
               (errors/when-not-error (= 1 (ds/column-count string-ds))
                                      "Dataset contains more then 1 string column, which is not supported.")
-                                     
+
               (-> ds ds/columns first)))]
     X))
 
@@ -138,7 +135,7 @@
    (fit ds module-kw estimator-class-kw {}))
   ([ds module-kw estimator-class-kw kw-args]
    (let [{:keys [estimator X y]} (prepare-python ds module-kw estimator-class-kw kw-args)]
-     
+
      (if y
        (py. estimator fit X y)
        (py. estimator fit X)))))
@@ -168,16 +165,16 @@
   "Calls `predict` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
   ([ds estimator inference-target-column-names]
    (let
-       [first-target-column-name (first inference-target-column-names)
-        _ (errors/when-not-error first-target-column-name "No inference target column name given")
-        feature-ds (cf/feature ds)
-        X  (ds->X feature-ds)
-        prediction (py. estimator predict X)
-        y_hat-ds
-        (->
-         (ds/->dataset { first-target-column-name prediction})
-         (ds/update-column first-target-column-name
-                           #(vary-meta % assoc :column-type :prediction)))]
+    [first-target-column-name (first inference-target-column-names)
+     _ (errors/when-not-error first-target-column-name "No inference target column name given")
+     feature-ds (cf/feature ds)
+     X  (ds->X feature-ds)
+     prediction (py. estimator predict X)
+     y_hat-ds
+     (->
+      (ds/->dataset {first-target-column-name prediction})
+      (ds/update-column first-target-column-name
+                        #(vary-meta % assoc :column-type :prediction)))]
 
      y_hat-ds))
   ([ds estimator]
@@ -187,11 +184,11 @@
   "Calls `predict_proba` on the given sklearn estimator object, and returns the result as a tech.ml.dataset"
   ([ds estimator inference-target-column-names]
    (let
-       [first-target-column-name (first inference-target-column-names)
-        _ (errors/when-not-error first-target-column-name "No inference target column name given")
-        feature-ds (cf/feature ds)
-        X  (ds->X feature-ds)]
-        
+    [first-target-column-name (first inference-target-column-names)
+     _ (errors/when-not-error first-target-column-name "No inference target column name given")
+     feature-ds (cf/feature ds)
+     X  (ds->X feature-ds)]
+
      (->
       (py. estimator predict_proba X)
       dst/tensor->dataset
