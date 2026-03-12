@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-* unreleased
+* 0.6
   * fix classifiers, which do not have "predict_proba" attribute
   * made some internal fns private
   * use 'uv' for python
