@@ -6,7 +6,7 @@
 (def lib 'org.scicloj/sklearn-clj)
 ; alternatively, use MAJOR.MINOR.COMMITS:
 ;;(def version (format "0.2.%s" (b/git-count-revs nil)))
-(def version "0.6")
+(def version "0.6.1")
 (def basis (b/create-basis {:project "deps.edn"}))
 (def class-dir "target/classes")
 

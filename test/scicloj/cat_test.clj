@@ -13,6 +13,7 @@
    [scicloj.metamorph.ml :as ml]
    [scicloj.metamorph.ml.loss :as loss]
    [scicloj.sklearn-clj.ml]
+   [tech.v3.dataset.io.nippy]
    [clojure.test :refer [deftest is]]))
    
 (py/initialize!)
